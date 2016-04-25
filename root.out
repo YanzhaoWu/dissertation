@@ -1,0 +1,102 @@
+\BOOKMARK [0][-]{chapter*.1}{Abstract}{}% 1
+\BOOKMARK [0][-]{chapter*.2}{Acknowledgments}{}% 2
+\BOOKMARK [0][-]{chapter*.5}{List of Tables}{}% 3
+\BOOKMARK [0][-]{chapter*.6}{List of Figures}{}% 4
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 5
+\BOOKMARK [0][-]{chapter.2}{Set-associative filesystem \(SAFS\)}{}% 6
+\BOOKMARK [1][-]{section.2.1}{Introduction}{chapter.2}% 7
+\BOOKMARK [1][-]{section.2.2}{Related work}{chapter.2}% 8
+\BOOKMARK [1][-]{section.2.3}{A High IOPS File Abstraction}{chapter.2}% 9
+\BOOKMARK [2][-]{subsection.2.3.1}{Reducing Lock Contention}{section.2.3}% 10
+\BOOKMARK [2][-]{subsection.2.3.2}{Processor Affinity}{section.2.3}% 11
+\BOOKMARK [2][-]{subsection.2.3.3}{Other Optimizations}{section.2.3}% 12
+\BOOKMARK [2][-]{subsection.2.3.4}{Implementation}{section.2.3}% 13
+\BOOKMARK [1][-]{section.2.4}{A Set-Associative Page Cache}{chapter.2}% 14
+\BOOKMARK [2][-]{subsection.2.4.1}{Resizing}{section.2.4}% 15
+\BOOKMARK [2][-]{subsection.2.4.2}{Read and write optimizations}{section.2.4}% 16
+\BOOKMARK [2][-]{subsection.2.4.3}{NUMA design}{section.2.4}% 17
+\BOOKMARK [1][-]{section.2.5}{Performance evaluation}{chapter.2}% 18
+\BOOKMARK [2][-]{subsection.2.5.1}{User-Space File Abstraction}{section.2.5}% 19
+\BOOKMARK [2][-]{subsection.2.5.2}{Set-Associative Caching}{section.2.5}% 20
+\BOOKMARK [2][-]{subsection.2.5.3}{HPC benchmark}{section.2.5}% 21
+\BOOKMARK [1][-]{section.2.6}{Conclusion}{chapter.2}% 22
+\BOOKMARK [0][-]{chapter.3}{FlashGraph}{}% 23
+\BOOKMARK [1][-]{section.3.1}{Introduction}{chapter.3}% 24
+\BOOKMARK [1][-]{section.3.2}{Related Work}{chapter.3}% 25
+\BOOKMARK [1][-]{section.3.3}{Design}{chapter.3}% 26
+\BOOKMARK [2][-]{subsection.3.3.1}{SAFS}{section.3.3}% 27
+\BOOKMARK [2][-]{subsection.3.3.2}{The architecture of FlashGraph}{section.3.3}% 28
+\BOOKMARK [2][-]{subsection.3.3.3}{Programming model}{section.3.3}% 29
+\BOOKMARK [2][-]{subsection.3.3.4}{Execution model}{section.3.3}% 30
+\BOOKMARK [3][-]{subsubsection.3.3.4.1}{Message passing}{subsection.3.3.4}% 31
+\BOOKMARK [3][-]{subsubsection.3.3.4.2}{Synchronous vs. asynchronous computation}{subsection.3.3.4}% 32
+\BOOKMARK [2][-]{subsection.3.3.5}{Data representation in FlashGraph}{section.3.3}% 33
+\BOOKMARK [3][-]{subsubsection.3.3.5.1}{In-memory data representation}{subsection.3.3.5}% 34
+\BOOKMARK [3][-]{subsubsection.3.3.5.2}{External-memory data representation}{subsection.3.3.5}% 35
+\BOOKMARK [2][-]{subsection.3.3.6}{Edge list access on SSDs}{section.3.3}% 36
+\BOOKMARK [2][-]{subsection.3.3.7}{Vertex scheduling}{section.3.3}% 37
+\BOOKMARK [2][-]{subsection.3.3.8}{Graph partitioning}{section.3.3}% 38
+\BOOKMARK [3][-]{subsubsection.3.3.8.1}{Load balancing}{subsection.3.3.8}% 39
+\BOOKMARK [1][-]{section.3.4}{Applications}{chapter.3}% 40
+\BOOKMARK [1][-]{section.3.5}{Experimental Evaluation}{chapter.3}% 41
+\BOOKMARK [2][-]{subsection.3.5.1}{SSD I/O microbenchmark}{section.3.5}% 42
+\BOOKMARK [3][-]{subsubsection.3.5.1.1}{Message passing benchmark}{subsection.3.5.1}% 43
+\BOOKMARK [2][-]{subsection.3.5.2}{FlashGraph: in-memory vs. \040semi-external memory}{section.3.5}% 44
+\BOOKMARK [2][-]{subsection.3.5.3}{FlashGraph vs. in-memory engines}{section.3.5}% 45
+\BOOKMARK [2][-]{subsection.3.5.4}{FlashGraph vs. external memory \040engines}{section.3.5}% 46
+\BOOKMARK [2][-]{subsection.3.5.5}{Scale to billion-node graphs}{section.3.5}% 47
+\BOOKMARK [2][-]{subsection.3.5.6}{The impact of optimizations}{section.3.5}% 48
+\BOOKMARK [3][-]{subsubsection.3.5.6.1}{Preserve sequential I/O}{subsection.3.5.6}% 49
+\BOOKMARK [3][-]{subsubsection.3.5.6.2}{The impact of the page size}{subsection.3.5.6}% 50
+\BOOKMARK [2][-]{subsection.3.5.7}{The impact of page cache size}{section.3.5}% 51
+\BOOKMARK [1][-]{section.3.6}{Conclusions}{chapter.3}% 52
+\BOOKMARK [0][-]{chapter.4}{Sparse matrix multiplication}{}% 53
+\BOOKMARK [1][-]{section.4.1}{Introduction}{chapter.4}% 54
+\BOOKMARK [1][-]{section.4.2}{Related Work}{chapter.4}% 55
+\BOOKMARK [1][-]{section.4.3}{Sparse matrix multiplication}{chapter.4}% 56
+\BOOKMARK [2][-]{subsection.4.3.1}{Semi-external memory}{section.4.3}% 57
+\BOOKMARK [2][-]{subsection.4.3.2}{Sparse matrix format}{section.4.3}% 58
+\BOOKMARK [2][-]{subsection.4.3.3}{Dense matrices}{section.4.3}% 59
+\BOOKMARK [2][-]{subsection.4.3.4}{Runtime CPU optimizations}{section.4.3}% 60
+\BOOKMARK [2][-]{subsection.4.3.5}{I/O optimizations}{section.4.3}% 61
+\BOOKMARK [2][-]{subsection.4.3.6}{Parallelization}{section.4.3}% 62
+\BOOKMARK [2][-]{subsection.4.3.7}{The impact of the memory size on I/O}{section.4.3}% 63
+\BOOKMARK [2][-]{subsection.4.3.8}{I/O complexity}{section.4.3}% 64
+\BOOKMARK [1][-]{section.4.4}{Applications}{chapter.4}% 65
+\BOOKMARK [2][-]{subsection.4.4.1}{PageRank}{section.4.4}% 66
+\BOOKMARK [2][-]{subsection.4.4.2}{Eigensolver}{section.4.4}% 67
+\BOOKMARK [2][-]{subsection.4.4.3}{Non-negative matrix factorization}{section.4.4}% 68
+\BOOKMARK [1][-]{section.4.5}{Experimental Evaluation}{chapter.4}% 69
+\BOOKMARK [2][-]{subsection.4.5.1}{The performance of sparse matrix multiplication}{section.4.5}% 70
+\BOOKMARK [3][-]{subsubsection.4.5.1.1}{SEM-SpMM vs. IM-SpMM}{subsection.4.5.1}% 71
+\BOOKMARK [3][-]{subsubsection.4.5.1.2}{SEM-SpMM vs. other in-memory SpMM}{subsection.4.5.1}% 72
+\BOOKMARK [3][-]{subsubsection.4.5.1.3}{SEM-SpMM with a large input dense matrix}{subsection.4.5.1}% 73
+\BOOKMARK [2][-]{subsection.4.5.2}{Optimizations on sparse matrix multiplication}{section.4.5}% 74
+\BOOKMARK [2][-]{subsection.4.5.3}{Performance of the applications}{section.4.5}% 75
+\BOOKMARK [3][-]{subsubsection.4.5.3.1}{PageRank}{subsection.4.5.3}% 76
+\BOOKMARK [3][-]{subsubsection.4.5.3.2}{Eigensolver}{subsection.4.5.3}% 77
+\BOOKMARK [3][-]{subsubsection.4.5.3.3}{NMF}{subsection.4.5.3}% 78
+\BOOKMARK [1][-]{section.4.6}{Conclusions}{chapter.4}% 79
+\BOOKMARK [0][-]{chapter.5}{FlashMatrix}{}% 80
+\BOOKMARK [1][-]{section.5.1}{Introduction}{chapter.5}% 81
+\BOOKMARK [1][-]{section.5.2}{Related Work}{chapter.5}% 82
+\BOOKMARK [1][-]{section.5.3}{Design}{chapter.5}% 83
+\BOOKMARK [2][-]{subsection.5.3.1}{Dense matrices}{section.5.3}% 84
+\BOOKMARK [3][-]{subsubsection.5.3.1.1}{Tall-and-skinny matrices}{subsection.5.3.1}% 85
+\BOOKMARK [3][-]{subsubsection.5.3.1.2}{Virtual matrices}{subsection.5.3.1}% 86
+\BOOKMARK [3][-]{subsubsection.5.3.1.3}{A group of dense matrices}{subsection.5.3.1}% 87
+\BOOKMARK [2][-]{subsection.5.3.2}{Generalized computation operations}{section.5.3}% 88
+\BOOKMARK [2][-]{subsection.5.3.3}{Vectorized user-defined function}{section.5.3}% 89
+\BOOKMARK [2][-]{subsection.5.3.4}{Lazy evaluation}{section.5.3}% 90
+\BOOKMARK [2][-]{subsection.5.3.5}{Matrix materialization}{section.5.3}% 91
+\BOOKMARK [2][-]{subsection.5.3.6}{Memory management}{section.5.3}% 92
+\BOOKMARK [2][-]{subsection.5.3.7}{Implementation of GenOps with VUDF}{section.5.3}% 93
+\BOOKMARK [2][-]{subsection.5.3.8}{Implementation of GenOps on a group of matrices}{section.5.3}% 94
+\BOOKMARK [1][-]{section.5.4}{Experimental evaluation}{chapter.5}% 95
+\BOOKMARK [2][-]{subsection.5.4.1}{Statistics and Machine learning applications}{section.5.4}% 96
+\BOOKMARK [2][-]{subsection.5.4.2}{Comparative performance of FlashMatrix}{section.5.4}% 97
+\BOOKMARK [2][-]{subsection.5.4.3}{Performance of FlashMatrix in memory and on SSDs}{section.5.4}% 98
+\BOOKMARK [2][-]{subsection.5.4.4}{Effectiveness of optimizations}{section.5.4}% 99
+\BOOKMARK [1][-]{section.5.5}{Conclusions}{chapter.5}% 100
+\BOOKMARK [0][-]{chapter*.71}{Bibliography}{}% 101
+\BOOKMARK [0][-]{chapter*.72}{Vita}{}% 102

@@ -1,0 +1,173 @@
+\chapter{Introduction}
+\label{sec:intro}
+%\chaptermark{Optional running chapter heading}
+
+% The key point here is that data is large and often irregular and we want
+% to run complex computation on them.
+In today's big data era, we face the challenges in both the explosion of
+data volume and the increasing complexity of data analysis. Experiments,
+simulations and observations generate terabytes or
+even petabytes in many scientific and business areas. After collecting
+a massive amount of data, we often need to perform complex data analysis
+and machine learning techniques to extract value from the data. To handle
+the increasing volume size and effectively extract value from the data,
+the field of data mining and machine learning evolves rapidly and the community
+is developing many new algorithms to process large datasets.
+
+% Graph analysis.
+Large-scale graph analysis is one of the common data analysis tools in both
+academia and industry. This models
+real-world problems in the form of graphs (vertices and edges) to study objects
+and the connection between the objects. Graph analysis becomes ubiquitous
+and has applications to many fields such as social networks, semantic search
+and knowledge discovery and cybersecurity. A well-known example is that Google
+applies PageRank \cite{pagerank} on the Web page graph to determine the importance
+of Web pages so that it can provide users more relevant search results.
+
+When applying graph analysis to real-world problems, we often encounter
+massive and irregular graphs. For example, the Facebook social network graph
+has billions of vertices, hundreds of billions of edges; the neural network
+of a human brain has a fundamental size of $10^{11}$ vertices and $10^{15}$ edges;
+graphs that evolve over time can grow even larger. These graphs often have
+nearly random vertex connection and power law distribution, which cause random
+memory access and load imbalance. As such, leading systems process graph analysis
+in RAM and scale to large graphs in a cluster of machines. While good partitions
+may be important for performance~\cite{surfer}, these leading systems partition
+graphs randomly \cite{powergraph}. Network performance emerges as the bottleneck
+and large-scale graph analysis requires fast networks to realize good performance.
+
+% Matrix formulation for graph analysis
+We can represent a graph with a sparse matrix and express graph analysis
+as matrix operations \cite{Mattson13}. In this formulation, a row
+or a column of a sparse matrix represents a vertex in a graph and a non-zero
+entry encodes the existence of an edge or the edge weight on a graph.
+As such, these matrices inherit structure from natural graphs. Specifically,
+these matrices are typically very sparse and have near-random distribution
+for non-zero entries. They also have a power law distribution that governs
+the number of non-zero entries per row and column. As such, a graph algorithm
+is expressed as a sequence of matrix operations.
+
+Matrix formulation has several advantages for some graph analysis problems.
+First, this formulation is more intuitive for domain experts and users can
+express their graph algorithms with high-level matrix operations. The matrix
+formulation may also achieve higher performance for some graph analysis
+applications such as PageRank \cite{pagerank} and spectral clustering
+\cite{spectral}, expressed intuitively with sparse matrix multiplication.
+By highly optimizing this matrix operation,
+we significantly improve performance of many graph algorithms.
+
+% General-purpose machine learning.
+Other than graph analysis, matrix formulation and linear algebra are also
+the core of many scientific tasks and machine learning tasks. In these
+applications, we store data in sparse matrices and dense matrices and express
+algorithms with matrix operations. This formulation is intuitive for domain
+experts.
+People develop matrix-oriented tools such
+as R and Matlab.
+
+We can generalize these basic matrix operations
+to express many more problems. For example, we can use inner product instead of
+matrix multiplication and use aggregation instead of summation. Having a small
+set of operations greatly simplifies our implementations for these tasks.
+As such, we only need to focus on the implementations and optimizations
+on these basic operations. Like graph analysis, some matrix operations
+such as sparse matrix multiplication generate irregular data access and, thus,
+they suffer from the same challenges as graph analysis. Dense matrix operations,
+on the other hand, typically exhibit very sequential data access patterns but
+may still require large amount of data movement for computation.
+
+Complex data analysis at a large scale causes significant challenges for
+conventional tools such as SQL databases. The challenges lead to the redesign
+of data analysis tools. MapReduce
+\cite{mapreduce} is one of the most well-known tools developed for data
+analysis in the petabyte scale. Even though MapReduce is able to
+process data of petabytes in a large cluster, the framework is not able to
+handle many data analysis tasks efficiently due to the limited programming
+interface for applications. Since then, many distributed frameworks have
+been developed for large-scale data analysis such as Dryad \cite{dryad},
+Spark \cite{spark} and Naiad \cite{naiad}. These general-purpose frameworks
+provides more primitives to express applications more efficiently.
+% related work in supercomputing.
+
+Majority of the current research focuses on scaling out to enable large-scale
+data analysis and achieving better scalability, but many of them achieve better
+scalability at the cost of large overhead introduced to the system.
+This problem certainly exists in MapReduce. As McSherry et al. \cite{mcsherry15}
+points out, many graph analysis frameworks such as PowerGraph \cite{powergraph}
+and GraphX \cite{graphx} suffer from the same problem. Such inefficiency
+%Dollar efficiency and energy efficiency
+
+% I/O
+One the other hand, the tremendous improvement in storage I/O technology
+in the recent years opens a new direction for large-scale data analysis.
+For example, the fastest Fusion-IO \cite{fusionio} and a large SSD array
+\cite{safs} can reach over
+one million random IOPS and over ten gigabytes per second. This is at the same
+order or only one order of magnitude less than RAM. The tremendous performance
+improvement in I/O performance significantly extend memory capacity to improve
+large-scale data analysis. These new I/O technologies lead us to developing
+new data analysis frameworks to fully utilize the I/O capacity.
+
+Given the tremendous hardware improvement, typical questions are: \textit{(i)}
+can we replace RAM with fast flash in large-scale data analysis? \textit{(ii)}
+To what extent
+can the performance of flash-based data analysis approach that of RAM-based
+data analysis? If data analysis on flash can achieve performance similar to
+that in RAM, it will positively affect computer architecture and revolutionize
+large-scale data analysis.
+
+Instead of scaling out, we explore large-scale data analysis in a single machine,
+by utilizing the fast I/O technology. In this work, we focus on building
+a cost-effective system with commodity hardware and implementing an efficient
+data analysis framework to maximize performance that the existing hardware
+configuration can deliver. This work is orthogonal to the distributed solutions.
+Our work can serve as a building block for the distributed solutions to process
+data at even a larger scale.
+% point out that our solution in some applications can outperform a pure
+% distributed solution.
+
+Hardware advances impose many new challenges in system design (both the operating
+system and the data analysis framework). Operating systems were traditionally
+built with an assumption of slow I/O. There exists significant overhead in
+almost all layers of the block stack when it operates on fast storage media.
+For example, a traditional Linux filesystem on top of a large SSD array
+can only yield a small fraction of the capacity of the SSD array \cite{safs}.
+I/O latency still remains relatively high, usually multiple orders of magnitude
+larger than RAM. High-speed I/O consumes significant CPU power and main memory
+bandwidth. To maximize the overall performance, it is crucial to minimize CPU
+overhead and memory bandwidth use from I/O. Although the latest I/O devices
+deliver unprecedented performance, they are still slower than RAM, let alone
+CPU cache. There are many opportunities to optimize the system to achieve
+performance better than the raw hardware can deliver.
+
+Given all of these challenges, we build a SSD-based data analysis framework
+to explore the benefits that flash memory brings to large-scale data analysis.
+We specifically targets graph analysis and linear
+algebra, which the national research council identified as two of major massive
+data analysis tasks \cite{} in 2013. Our framework has three main parts:
+\begin{itemize}
+	\item SAFS \cite{safs} is a user-space filesystem optimized for large SSD
+		arrays. SAFS abstracts away the complexity of data access on SSDs and
+		delivers the maximal I/O performance of a large SSD array in a NUMA
+		machine. SAFS also provides an efficient caching layer. 
+	\item FlashGraph \cite{flashgraph} is a semi-external memory graph analysis
+		framework. FlashGraph takes advantage of SAFS and issues I/O requests
+		carefully to bring data from SSDs to CPUs efficiently for graph analysis
+		to achieve performance comparable to in-memory counterparts. FlashGraph
+		is specifically optimized for graph applications that generates random
+		I/O access to SSDs.
+	\item Sparse matrix multiplication \cite{spmm}.
+	\item FlashMatrix \cite{flashmatrix} implements a set of basic matrix
+		operations as well as some generalized matrix operations to
+		express a large range of machine learning and data analysis applications
+		in external memory. Like FlashGraph, the goal of FlashMatrix is to brings
+		data from SSDs to CPUs efficiently for basic and generalized matrix
+		operations. Unlike FlashGraph, FlashMatrix is optimized for applications
+		with sequential I/O access to SSDs. To illustrate the performance of
+		FlashMatrix, we implement an SSD-based eigensolver called FlashEigen.
+\end{itemize}
+
+% currsize is not set in the long table environment, so we need to set it before we set it up.
+\makeatletter
+\let\@currsize\normalsize
+\makeatother
