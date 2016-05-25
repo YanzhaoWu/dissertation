@@ -6,22 +6,23 @@
 
 \begin{abstract}
 
-The advance of new I/O technologies has tremendously improved random I/O
-performance. It raises the question how the new I/O technologies benefit
+The advance of new I/O technologies has tremendously improved I/O performance.
+This raises a question on how the new I/O technologies benefit
 large-scale data analysis. This dissertation addresses this question by
-developing two frameworks to target large-scale graph analysis and machine
-learning.
-FlashGraph
+developing a data analysis ecosystem called FlashX to target a large range of
+data analysis tasks. FlashX includes three subsystems: SAFS, FlashGraph and
+FlashMatrix. SAFS is a user-space filesystem optimized for a large SSD array
+to deliver maximal I/O throughput from SSDs. FlashGraph
 is a general-purpose graph analysis framework that processes graphs in
-a semi-external memory model and scales to graphs with billions of vertices
-by utilizing solid-state drives (SSDs) in non-uniform memory architecture (NUMA).
+a semi-external memory fashion and scales to graphs with billions of vertices
+by utilizing SSDs through SAFS in non-uniform memory architecture (NUMA).
 FlashMatrix is a matrix-oriented programming framework for general data analysis
-with high-level functional programming interface. Similar to FlashGraph, it
+with a high-level functional programming interface. Similar to FlashGraph, it
 scales matrix operations beyond memory capacity by utilizing SSDs. We demonstrate
 that with the current I/O technologies FlashGraph and FlashMatrix in
 the (semi-)external-memory mode are capable of achieving performance comparable
-to their in-memory mode while significantly outperforming state-of-art in-memory
-counterparts.
+to their in-memory mode while significantly outperforming state-of-the-art
+in-memory counterparts for a large variety of data analysis tasks.
 
 \vspace{1cm}
 
