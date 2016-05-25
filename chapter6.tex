@@ -2,3 +2,61 @@
 \label{sec:conclu}
 \chaptermark{}
 
+This thesis addresses the challenges in today's large-scale data analysis:
+the explosion of the data volume and the increasing complexity of data analysis
+for extracting insight of the collected data. Unlike most of previous works
+in the literature, we scale data analysis by utilizing SSDs. Instead of developing
+data analysis algorithms on SSDs directly, we develop programming frameworks
+for users to implement complex data analysis algorithms and hides the complexity
+of external-memory data analysis and parallel computation.
+
+One of the main contributions of this thesis is
+developing a comprehensive data analysis ecosystem called FlashX, which covers
+a large range of data analysis tasks. FlashX contains three major subsystems:
+SAFS, FlashGraph and FlashMatrix. By seaminglessly integrating these subsystems
+together, FlashX achieves very good efficiency, scalability and generality.
+\begin{itemize}
+\item SAFS serves as the data access layer in the system to deliver the maximal
+	I/O throughput provided by a large SSD array (millions of I/O per second
+	for random I/O and tens of gigabytes per second for sequential I/O). In
+	addition, the light-weight page cache in SAFS further magnifies the perceived
+	I/O performance for the workloads that generate cache hits.
+\item FlashGraph is a general-purpose programming framework that provides a simple
+	programming interface for users to write varieties of graph algorithms easily
+	for large-scale graph analysis. It effectively scales to graphs with billions
+	of vertices in a single machine by using semi-external memory, where we store
+	vertex state in memory and edge lists on solid-state drives (SSDs). It
+	significantly outperforms other state-of-art distributed memory graph engines
+	such as PowerGraph and GraphX.
+\item FlashMatrix provides a matrix-oriented programming interface. It supports
+	computation on both sparse matrices and dense matrices, which enables FlashMatrix
+	to process both graph analysis and machine learning tasks efficiently. In addition,
+	FlashMatrix is seaminglessly integrated with the R framework and execute
+	R code in parallel and out of core automatically and scales R to datasets with
+	billions of data points. As such, FlashMatrix provides R users a simple way of
+	explore large-scale data analysis.
+\end{itemize}
+
+By implementing the efficient data analysis ecosystem, we are able to thoroughly
+study the role of flash memory in varieties of data analysis at a large scale.
+We demonstrate that many graph analysis and machine learning tasks benefit from
+flash memory. With careful design and engineering in the data analysis framework
+as well as some programming efforts from users, external-memory implementations
+of these data analysis tasks achieve performance comparable to that of
+state-of-the-art in-memory implementations, while scaling to very large datasets.
+This indicates that fast SSDs can replace RAM in data analysis. This may shape
+the design of future machines for large-scale data analysis.
+
+Over the course of studying data analysis tasks on SSDs, we also conclude that
+the semi-external memory strategy is a simple but effective way of achieving
+both performance and scalability. We adopt semi-external memory in FlashGraph
+for graph analysis and in FlashMatrix for sparse matrix multiplication.
+In FlashGraph, we keep vertex state in memory and edge lists of graphs on SSDs.
+This partitioning enables in-memory vertex communication, the operation
+generating majority of small random memory accesses in graph analysis. Thus, we
+achieve in-memory performance while scaling beyond memory capacity. We further
+extend the concept of semi-external memory to sparse matrix multiplication,
+where we keep the sparse matrix on SSDs while keeping the dense matrix or some
+columns of the dense matrix in memory. This strategy enables us to achieve
+in-memory performance while performing sparse matrix multiplication on a massive
+sparse matrix.
