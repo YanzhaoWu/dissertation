@@ -1,9 +1,13 @@
 \chapter{FlashMatrix}
 \label{sec:fm}
-\chaptermark{}
+\chaptermark{FlashMatrix: Parallel, Scalable Data Analysis with Generalized
+	Matrix Operations using Commodity SSDs}
 
-FlashMatrix is a matrix-oriented programming framework for general data analysis
-with high-level functional programming interface. It scales matrix operations
+This chapter describes FlashMatrix, a matrix-oriented programming framework
+for general data analysis with high-level functional programming interface.
+FlashMatrix incorporates the efficient sparse matrix multiplication in Chapter
+\ref{sec:fe}. In this chapter, we focus on dense matrix operations in FlashMatrix.
+Like FlashGraph, FlashMatrix scales matrix operations
 beyond memory capacity by utilizing solid-state drives (SSDs) in non-uniform
 memory architecture (NUMA). It provides a small number of generalized matrix
 operations (GenOps) and reimplements a large number of matrix operations in
@@ -12,10 +16,13 @@ core automatically. FlashMatrix
 uses vectorized user-defined functions (VUDF) to reduce the overhead of function
 calls and fuses matrix operations to reduce data movement between CPU and
 SSDs. We implement multiple machine learning algorithms in R to benchmark
-the performance of FlashMatrix. On a large parallel machine, out-of-core
+the performance of FlashMatrix. The execution of the R implementations in
+FlashMatrix has performance comparable to optimized C implementations.
+When scaling beyond memory capacity on a large parallel machine, the out-of-core
 execution of these R implementations in FlashMatrix has performance comparable
-to in-memory execution on a billion-scale dataset while significantly
-outperforming the in-memory implementations of Spark MLlib.
+to in-memory execution on a billion-scale dataset. Both in-memory and
+out-of-core execution significantly outperform the in-memory execution of
+Spark MLlib.
 
 \section{Introduction}
 \input{FlashMatrix/intro}

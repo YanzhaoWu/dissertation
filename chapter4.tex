@@ -1,14 +1,20 @@
 \chapter{Sparse matrix multiplication}
 \label{sec:fe}
-\chaptermark{}
+\chaptermark{Semi-External Memory Sparse Matrix Multiplication on
+Billion-node Graphs in a Multicore Architecture}
 
-Owing to random memory access patterns, sparse matrix multiplication is
-traditionally performed in memory and scales to large matrices using
-the distributed memory of multiple nodes.
-In contrast, we scale sparse matrix multiplication by utilizing commodity
-SSDs. We implement sparse matrix dense matrix multiplication (SpMM) in
+This chapter describes another view of graph analysis. Instead of viewing
+a graph as a collection of vertices and edges, we encode a graph as
+a sparse matrix and express graph analysis as matrix operations \cite{Mattson13}.
+In this formulation, a row or a column of a sparse matrix represents a vertex
+in a graph and a non-zero entry encodes the existence of an edge or the edge
+weight on a graph. As such, many graph analysis algorithms such as PageRank
+and spectral clustering are expressed as sparse matrix multiplication.
+In this chapter, we describe an efficient implementation of sparse matrix
+dense matrix multiplication (SpMM). We scale this matrix operation by utilizing
+commodity SSDs and implement it in
 a semi-external memory (SEM) fashion, i.e., we keep the sparse matrix on SSDs
-and dense matrices in memory. Our SEM SpMM can incorporate many
+and dense matrices in memory. Our SEM SpMM incorporates many
 in-memory optimizations for large power-law graphs with near-random vertex
 connection. Coupled with many I/O optimizations, our SEM SpMM achieves performance
 comparable to our in-memory implementation on a large parallel machine and
