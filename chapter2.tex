@@ -1,15 +1,15 @@
 \chapter{Set-associative filesystem (SAFS)}
 \label{sec:safs}
-\chaptermark{}
+\chaptermark{SAFS: Toward Millions of File System IOPS on Low-Cost, Commodity
+Hardware}
 
-We describe a storage system that 
-removes I/O bottlenecks to achieve more than one million IOPS
-based on a user-space file abstraction for arrays of commodity SSDs.
-The file abstraction refactors I/O scheduling and placement for extreme
-parallelism and non-uniform memory and I/O.
+This chapter describes our user-space filesystem called SAFS
+(set-associative filesystem) that removes I/O bottlenecks to achieve over one
+million IOPS from arrays of commodity SSDs. SAFS refactors I/O scheduling and
+placement for extreme parallelism and non-uniform memory and I/O.
 The system includes a set-associative, parallel page cache in the user space.
-We redesign page caching to eliminate CPU overhead and lock-contention in non-uniform memory
-architecture machines.
+We redesign page caching to eliminate CPU overhead and lock-contention in
+non-uniform memory architecture machines.
 We evaluate our design on a 32 core NUMA machine with four, eight-core processors. 
 Experiments show that our design delivers 1.23 million 512-byte read IOPS.
 The page cache realizes the scalable IOPS of Linux asynchronous I/O (AIO) 
@@ -123,7 +123,7 @@ and with increased mutli-core parallelism owing to processor overhead.
 %Linux file systems properly, we can achieve the same read/write performance
 %as raw devices.
 
-The first contribution of this paper is the design of a user-space file abstraction that
+The first contribution of this paper is the design of a user-space file system that
 performs more than one million IOPS on commodity hardware.   We implement a thin software
 layer that gives application programmers synchronous and asynchronous interfaces to 
 file I/O.  The system modifies I/O scheduling, interrupt handling, and data placement
@@ -233,7 +233,7 @@ storage performance.
 Our previous work \cite{hotstorage12} shows that a fixed size set-associative cache
 achieves good scalability with parallelism using a RAM disk.
 This paper extend this result to SSD arrays and adds features, such as replacement,
-write optimizations, and dynamic sizing.  The design of the user-space file abstraction
+write optimizations, and dynamic sizing.  The design of the user-space file system
 is novel to this paper as well.
 
 \section{A High IOPS File Abstraction}
@@ -305,7 +305,7 @@ local PCI bus.
 \centering
 \includegraphics[scale=0.6]{figs/SAFS/SSD-array.pdf}
 \vspace{-5pt}
-\caption{The architecture of the SSD file abstraction (SSDFA).}
+\caption{The architecture of SAFS.}
 \vspace{-5pt}
 \label{SSD_VFS}
 \end{figure}
@@ -363,8 +363,8 @@ the data mapping layer of Figure \ref{SSD_VFS}.
 \noindent Workloads that do not perform sequential I/O benefit from randomization.
 
 \subsection{Implementation}
-We implement this system in a user-space library that exposes a simple
-file abstraction (SSDFA) to user applications. It supports basic operations
+We implement this system in the user space that exposes a simple
+file abstraction to user applications. It supports basic operations
 such as file creation, deletion, open, close, read and write,
 and provides both synchronous and asynchronous read and write interface.
 Each virtual file has metadata to keep track of the corresponding files on the
@@ -586,9 +586,9 @@ We reduce synchronization overheads by amortizing them over larger messages.
 
 \section{Performance evaluation}
 We evaluate our implementation with various workloads. We start with the
-evaluation on the user-space file abstraction without caching to demonstrate
-the raw performance of the hardware. We evaluate the page cache in the file
-abstraction with various workloads from commercial data services and scientific
+evaluation on SAFS without caching to demonstrate the raw performance of
+the hardware. We evaluate the page cache in SAFS
+with various workloads from commercial data services and scientific
 applications. We further integrate our system into the IOR benchmark \cite{IOR}
 to measure its performance in a typical HPC environment.
 
@@ -655,27 +655,25 @@ File system on SSDs & XFS \\
 
 \subsection{User-Space File Abstraction}
 This section enumerates the effectiveness of the hardware and software
-optimizations implemented in the SSD user-space file abstraction without caching,
+optimizations implemented in SAFS without caching,
 showing the contribution of each. The size of the smallest
 requests issued by the page cache is 4KB, so we focus on 4KB read and write
 performance. In each experiment, we read/write 40GB data randomly through
-the SSD file abstraction in 16 threads.
+SAFS in 16 threads.
 
 \begin{figure}[tb]
 \begin{center}
 \vspace{-15pt}
 \include{figs/SAFS/SSD-improve}
 \vspace{-15pt}
-\caption{Optimizing page I/O on the SSD file abstraction accessed from
-	an 8 core processor (SMP).
+\caption{Optimizing page I/O in SAFS accessed from an 8 core processor (SMP).
 The bars show the aggregate IOPS when applying four optimizations successively
 in comparison with the hardware's capabilities (raw).}
 \label{ssd_impr}
 \end{center}
 \end{figure}
 
-We perform four optimizations on the SSD file abstraction in succession
-to optimize performance.
+We perform four optimizations on SAFS in succession to optimize performance.
 \vspace{-10pt}
 \begin{itemize}
 \addtolength{\itemsep}{-5pt}
@@ -686,8 +684,8 @@ to optimize performance.
 the application threads.
 \end{itemize}
 \vspace{-10pt}
-Figure \ref{ssd_impr} shows I/O performance improvement of the SSD
-file abstraction when applying these optimizations in succession.
+Figure \ref{ssd_impr} shows I/O performance improvement in SAFS when applying
+these optimizations in succession.
 %in the SMP configuration when threads run on the processor local to them.
 %By applying the optimizations O1, O2, O3 and O4, we can improve the
 Performance reaches a peak 765,000 read IOPS and 699,000 write IOPS from 
@@ -743,8 +741,7 @@ Write Bandwidth (64 kB) & 5.6GB/s & 4.4 GB/s \\
 \end{tabular}
 \normalsize
 \end{center}
-\caption{The performance of NUMA SSD user-space file abstraction compared
-with FusionIO ioDrive Octal.}
+\caption{The performance of SAFS compared with FusionIO ioDrive Octal.}
 \label{beat_fusion}
 \end{table}
 
@@ -753,8 +750,8 @@ with FusionIO ioDrive Octal.}
 \vspace{-15pt}
 \include{figs/SAFS/vs.soft.raid}
 \vspace{-15pt}
-\caption{Performance of our user-space file abstraction with Linux file systems
-	and software RAID. All systems use optimizations O\_even-irq and O\_noop.}
+\caption{Performance of SAFS with Linux file systems and software RAID.
+All systems use optimizations O\_even-irq and O\_noop.}
 \label{vs_soft_raid}
 \end{center}
 \end{figure}
@@ -908,7 +905,7 @@ NUMA-SA effectively avoids lock contention and reduces remote memory access,
 but Linux page cache has severe lock contention in the NUMA machine.
 This results in a factor of four improvement in user-perceived
 IOPS when compared with the Linux cache.  Notably, the Linux cache does not match the 
-performance of our SSD file abstraction (with no cachcing) until a 75\% 
+performance of SAFS (with no cachcing) until a 75\% 
 cache hit rate, which reinforces the concept that lightweight I/O processing is 
 equally important as caching to realize high IOPS.
 
@@ -1053,8 +1050,8 @@ the block devices.
 
 \subsection{HPC benchmark}
 
-This section evaluates the overall performance of the user-space file
-abstraction under HPC benchmarks. The typical setup of some HPC benchmarks
+This section evaluates the overall performance of SAFS under HPC benchmarks.
+The typical setup of some HPC benchmarks
 such as MADbench2 \cite{madbench2} has very large read/writes (in the
 order of magnitude of 100 MB). However, our system is optimized mainly
 for small random I/O accesses and requires many parallel I/O requests to
@@ -1071,8 +1068,8 @@ To better assess the performance of our system, we add multi-threading
 and asynchronous I/O support to the IOR benchmark.
 
 We perform thorough evaluations to our system with the IOR benchmark.
-We evaluate the synchronous and asynchronous interface of the SSD user-space
-file abstraction with various request sizes. We compare our
+We evaluate the synchronous and asynchronous interface of SAFS with various
+request sizes. We compare our
 system with Linux's existing solutions, software RAID and Linux page cache.
 For fair comparison, we only compare two options: asynchronous I/O without
 caching and synchronous I/O with caching, because Linux AIO does not
@@ -1174,9 +1171,8 @@ up the speed of page allocation required by other threads, all threads
 have to try to free pages and causes extremely high lock contention.
 
 \section{Conclusion}
-We present a storage system that achieves more than one million
-random read IOPS based on a user-space file abstraction running
-on an array of commodity SSDs.  The file abstraction builds on top of 
+We present a user-space filesystem called SAFS that achieves more than one million
+random read IOPS running on an array of commodity SSDs. SAFS builds on top of 
 a local file system on each SSD in order to aggregates their IOPS.
 It also creates dedicated threads for I/O to each SSD.  These threads
 access the SSD and file exclusively, which eliminates lock contention 
@@ -1185,7 +1181,7 @@ The design amplifies IOPS by 3.5 times and realizes nearly the
 full potential of the SSD hardware, less than 1\% loss for reads
 and 2.4\% for writes.
 
-In the file abstraction, we deploy a set-associative parallel
+In SAFS, we deploy a set-associative parallel
 page cache designed for non-uniform memory architectures.  
 The design divides the global page cache into many small, independent
 sets, which reduces lock contention.  For NUMA architectures, the 
