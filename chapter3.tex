@@ -1,6 +1,24 @@
 \chapter{FlashGraph}
 \label{sec:fg}
-\chaptermark{}
+\chaptermark{FlashGraph: Processing Billion-Node Graphs on an Array of
+Commodity SSDs}
+
+This chapter describes FlashGraph, a general-purpose graph processing framework
+for massive graphs. FlashGraph builds on top of SAFS to utilize commodity SSDs.
+We demonstrate that FlashGraph enables a multicore server to process graphs
+with billions of vertices and hundreds of billions of edges, with minimal
+performance loss. FlashGraph
+processes graphs in a semi-external memory fashion, i.e., it stores vertex state
+in memory and edge lists on SSDs. It hides latency by overlapping computation
+with I/O. To save I/O bandwidth, FlashGraph only accesses edge lists requested
+by applications from SSDs; to increase I/O throughput and reduce CPU overhead for I/O,
+it conservatively merges I/O requests. These designs maximize performance
+for applications with different I/O characteristics. FlashGraph exposes
+a general and flexible vertex-centric programming interface that can express
+a wide variety of graph algorithms and their optimizations. We demonstrate that
+FlashGraph in semi-external memory performs many algorithms with performance
+up to 80\% of its in-memory implementation and significantly outperforms
+PowerGraph, a popular distributed in-memory graph engine.
 
 \section{Introduction}
 \input{FlashGraph/intro}
