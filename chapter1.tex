@@ -36,27 +36,6 @@ may be important for performance~\cite{surfer}, these leading systems partition
 graphs randomly \cite{powergraph}. Network performance emerges as the bottleneck
 and large-scale graph analysis requires fast networks to realize good performance.
 
-% Matrix formulation for graph analysis
-Although the lead graph processing frameworks view a graph as a collection of
-vertices and edges, we can also represent a graph with a sparse matrix and
-express graph analysis
-as matrix operations \cite{Mattson13}. In this formulation, a row
-or a column of a sparse matrix represents a vertex in a graph and a non-zero
-entry encodes the existence of an edge or the edge weight on a graph.
-As such, these matrices inherit structure from natural graphs. Specifically,
-these matrices are typically very sparse and have near-random distribution
-for non-zero entries. They also have a power law distribution that governs
-the number of non-zero entries per row and column.
-
-This matrix formulation has several advantages for some graph analysis problems.
-First, this formulation is more intuitive for domain experts because users can
-express their graph algorithms with high-level matrix operations. The matrix
-formulation may also lead to more efficient implementations for some graph
-analysis applications such as PageRank \cite{pagerank} and spectral clustering
-\cite{spectral}, expressed intuitively with sparse matrix multiplication.
-By highly optimizing this matrix operation, we significantly improve
-performance of the implementations of many graph algorithms.
-
 % Matrix formulation for general data analysis
 Other than graph analysis, linear algebra is another fundamental tool for many
 scientific and machine learning applications. In these applications, we store
@@ -178,6 +157,25 @@ FlashX has three main subsystems:
 		in the R framework to execute R code in parallel and out of core
 		automatically.
 \end{itemize}
+
+% Matrix formulation for graph analysis
+In this thesis, we explore graph analysis in two formulations. FlashGraph views
+a graph as a collection of vertices and edges, while FlashMatrix represents
+a graph as a sparse matrix and express graph analysis as matrix operations
+\cite{Mattson13}. In the matrix formulation, a row or a column of a sparse
+matrix represents a vertex in a graph and a non-zero entry encodes the existence
+of an edge or the edge weight on a graph. Both formulations are commonly adopted
+and the leading graph processing frameworks use one of the formulations
+\cite{pregal, powergraph, graphx, graphchi, xstream, pegasus, heigen}.
+The first formulation is more flexible and can express very complex graph
+algorithms such as Louvain clustering \cite{louvain} and METIS \cite{metis}.
+It is also more efficient for some commonly used graph algorithms such as
+breadth-first search and triangle counting. The matrix formulation, however,
+is more intuitive for domain experts because these users are familiar with
+using matrix operations to express algorithms. The matrix
+formulation may also lead to more efficient implementations for some graph
+analysis applications such as PageRank \cite{pagerank} and spectral clustering
+\cite{spectral}, expressed intuitively with sparse matrix multiplication.
 
 FlashX uses semi-external memory for graph analysis
 and matrix computation to achieve both scalability and computation efficiency.
