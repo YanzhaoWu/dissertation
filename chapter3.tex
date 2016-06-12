@@ -4,10 +4,9 @@
 Commodity SSDs}
 
 This chapter describes FlashGraph, a general-purpose graph processing framework
-for massive graphs. FlashGraph builds on top of SAFS to utilize commodity SSDs.
-We demonstrate that FlashGraph enables a multicore server to process graphs
-with billions of vertices and hundreds of billions of edges, with minimal
-performance loss. FlashGraph
+built on top of SAFS for massive graphs. By utilizing commodity SSDs through SAFS,
+FlashGraph enables a multicore server to process graphs with billions of vertices
+and hundreds of billions of edges, with minimal performance loss. FlashGraph
 processes graphs in a semi-external memory fashion, i.e., it stores vertex state
 in memory and edge lists on SSDs. It hides latency by overlapping computation
 with I/O. To save I/O bandwidth, FlashGraph only accesses edge lists requested
