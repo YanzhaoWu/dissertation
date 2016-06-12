@@ -7,30 +7,28 @@
 \begin{abstract}
 
 With the explosion of data volume and the increasing complexity of data analysis,
-large-scale data analysis imposes significant challenges in systems designed for
-processing massive datasets. While the current research focuses on scaling out
+large-scale data analysis imposes significant challenges in systems design.
+While the current research focuses on scaling out
 to a large clusters, these scale-out solutions introduce significant overheads.
 This thesis is motivated by the advance of new I/O technologies such as flash
 memory. Instead of scaling out, we explore efficient system designs in a single
 commodity machine with non-uniform memory architecture (NUMA) and scale to large
-datasets by utilizing commodity solid-state drives (SSDs). This raises a question
-on how much the new I/O technologies benefit large-scale data analysis. To
-address this question, this thesis
-develops a data analysis ecosystem called FlashX to target a large range of
+datasets by utilizing commodity solid-state drives (SSDs). This thesis explores
+the impact of the new I/O technologies in large-scale data analysis.
+Instead of implementing individual data analysis algorithms for SSDs, we
+develop a data analysis ecosystem called FlashX to target a large range of
 data analysis tasks. FlashX includes three subsystems: SAFS, FlashGraph and
 FlashMatrix. SAFS is a user-space filesystem optimized for a large SSD array
 to deliver maximal I/O throughput from SSDs. FlashGraph is a general-purpose
 graph analysis framework that processes graphs in a semi-external memory fashion
 and scales to graphs with billions of vertices by utilizing SSDs through SAFS.
-FlashMatrix is a matrix-oriented programming framework for general data analysis
-with a high-level functional programming interface. Similar to FlashGraph, it
-scales matrix operations beyond memory capacity by utilizing SSDs. It executes
-R code automatically in parallel and out of core, with a speed comparable to
-C code. We demonstrate
+FlashMatrix is a matrix-oriented programming framework that supports both sparse
+matrices and dense matrices for general data analysis. Similar to FlashGraph, it
+scales matrix operations beyond memory capacity by utilizing SSDs. We demonstrate
 that with the current I/O technologies FlashGraph and FlashMatrix in
-the (semi-)external-memory mode are capable of achieving performance comparable
-to their in-memory mode while significantly outperforming state-of-the-art
-in-memory counterparts for a large variety of data analysis tasks.
+the (semi-)external-memory meets or even exceeds state-of-the-art in-memory
+data analysis frameworks while scaling to massive datasets for a large variety
+of data analysis tasks.
 
 \vspace{1cm}
 
