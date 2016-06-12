@@ -11,19 +11,19 @@ in a graph and a non-zero entry encodes the existence of an edge or the edge
 weight on a graph. As such, many graph analysis algorithms such as PageRank
 and spectral clustering are expressed as sparse matrix multiplication.
 In this chapter, we describe an efficient implementation of sparse matrix
-dense matrix multiplication (SpMM). We scale this matrix operation by utilizing
-commodity SSDs and implement it in
+dense matrix multiplication (SpMM), a key operation for graph analysis. We
+scale this matrix operation by utilizing commodity SSDs and implement it in
 a semi-external memory (SEM) fashion, i.e., we keep the sparse matrix on SSDs
-and dense matrices in memory. Our SEM SpMM incorporates many
-in-memory optimizations for large power-law graphs with near-random vertex
-connection. Coupled with many I/O optimizations, our SEM SpMM achieves performance
+and dense matrices in memory. Our SEM SpMM incorporates many in-memory
+optimizations that require a small memory footprint.
+Coupled with many I/O optimizations, our SEM SpMM achieves performance
 comparable to our in-memory implementation on a large parallel machine and
 outperforms the implementations in Trilinos and Intel MKL.
 Our experiments show that the SEM SpMM achieves almost 100\% performance
 of the in-memory implementation on graphs when the dense matrix has more
 than four columns; it achieves at least 65\% performance of the in-memory
 implementation for all of our graphs when the dense matrix has only one column.
-We apply our SpMM to three important data analysis applications and show that
+We apply our SpMM to three important graph analysis applications and show that
 our SSD-based implementations can significantly outperform state of the art
 of these applications and scale to billion-node graphs.
 
