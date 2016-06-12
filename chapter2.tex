@@ -3,18 +3,17 @@
 \chaptermark{SAFS: Toward Millions of File System IOPS on Low-Cost, Commodity
 Hardware}
 
-This chapter describes our user-space filesystem called SAFS
-(set-associative filesystem) that removes I/O bottlenecks to achieve over one
-million IOPS from arrays of commodity SSDs. SAFS refactors I/O scheduling and
-placement for extreme parallelism and non-uniform memory and I/O.
-The system includes a set-associative, parallel page cache in the user space.
-We redesign page caching to eliminate CPU overhead and lock-contention in
-non-uniform memory architecture machines.
+This chapter describes the I/O layer of our data analysis ecosystem called SAFS
+(set-associative filesystem), a user-space filesystem that removes I/O bottlenecks
+in the operating system to achieve over one million IOPS from arrays of commodity
+SSDs. SAFS achieves the extreme I/O performance by refactoring I/O scheduling and
+placement for extreme parallelism and non-uniform memory and I/O. It also includes
+a set-associative, parallel page cache in the user space that eliminates CPU
+overhead and lock-contention in non-uniform memory architecture machines.
 We evaluate our design on a 32 core NUMA machine with four, eight-core processors. 
 Experiments show that our design delivers 1.23 million 512-byte read IOPS.
 The page cache realizes the scalable IOPS of Linux asynchronous I/O (AIO) 
-and increases
-user-perceived I/O performance linearly with cache hit rates.
+and increases user-perceived I/O performance linearly with cache hit rates.
 The parallel, set-associative cache matches the cache hit rates
 of the global Linux page cache under real workloads.
 
@@ -143,13 +142,18 @@ inter-processor communication.
 
 The evaluation on a 32 core NUMA machine shows promising results. Our design
 delivers 1.23 million 512-byte read IOPS with our current hardware.
-The page cache realizes the scalable IOPS of
-Linux asynchronous I/O (AIO) and increases user-perceived I/O performance
-linearly with cache hit rates. To demonstrate the performance of our system
-in a typical HPC environment, we integrate it into the IOR benchmark \cite{IOR},
-a popolar HPC benchmark for I/O performance. The IOR benchmark further shows
-our design achieves good performance for all request sizes and the synchronous
-write in our system performs nearly as well as asynchronous write.
+The page cache realizes the scalable IOPS of Linux asynchronous I/O (AIO)
+and increases user-perceived I/O performance linearly with cache hit rates.
+We further demonstrate that our page cache achieves cache hit rates comparable
+to Linux page cache under real-world I/O workloads such as the ones from
+graph processing and cloud services. We conclude that SAFS maximizes the potential
+of fast SSDs in a large parallel machine and serves as an efficient I/O layer
+for SSD-based data analysis frameworks and cloud key-value stores.
+%To demonstrate the performance of our system
+%in a typical HPC environment, we integrate it into the IOR benchmark \cite{IOR},
+%a popolar HPC benchmark for I/O performance. The IOR benchmark further shows
+%our design achieves good performance for all request sizes and the synchronous
+%write in our system performs nearly as well as asynchronous write.
 
 %The contribution of our work is mainly in three folds: we build an SSD RAID with
 %low-cost hardware and a thin software layer, capable of delivering performance
@@ -230,11 +234,11 @@ new fair queuing techniques that work well with SSDs \cite{Park12}.
 We also have to modify I/O scheduling as one of many optimizations to 
 storage performance.
 
-Our previous work \cite{hotstorage12} shows that a fixed size set-associative cache
-achieves good scalability with parallelism using a RAM disk.
-This paper extend this result to SSD arrays and adds features, such as replacement,
-write optimizations, and dynamic sizing.  The design of the user-space file system
-is novel to this paper as well.
+%Our previous work \cite{hotstorage12} shows that a fixed size set-associative cache
+%achieves good scalability with parallelism using a RAM disk.
+%This paper extend this result to SSD arrays and adds features, such as replacement,
+%write optimizations, and dynamic sizing.  The design of the user-space file system
+%is novel to this paper as well.
 
 \section{A High IOPS File Abstraction}
 
@@ -325,7 +329,7 @@ to 2048 interrupts.  We distribute the interrupts of a storage controller
 host-bus adapter across multiple cores of its local processor.
 
 \para{I/O scheduler}
-Completely Fair Queuing (CFQ), the default I/O scheduler in the Linux kernel >2.6.18,
+Completely Fair Queuing (CFQ), the default I/O scheduler in the Linux kernel $>2.6.18$,
 maintains I/O requests in per-thread queues and allocates time slices for each process
 to access disks to achieve fairness. 
 When many threads access many SSDs simultaneously, CFQ prevent threads 
@@ -363,14 +367,14 @@ the data mapping layer of Figure \ref{SSD_VFS}.
 \noindent Workloads that do not perform sequential I/O benefit from randomization.
 
 \subsection{Implementation}
-We implement this system in the user space that exposes a simple
-file abstraction to user applications. It supports basic operations
-such as file creation, deletion, open, close, read and write,
-and provides both synchronous and asynchronous read and write interface.
-Each virtual file has metadata to keep track of the corresponding files on the
+We implement SAFS, a user-space filesystem that realizes our design. It exposes
+a simple file abstraction to user applications and supports basic operations
+such as file creation, deletion, open, close, read and write.
+It provides both synchronous and asynchronous read and write interface.
+Each SAFS file has metadata to keep track of the corresponding files on the
 underlying file system. Currently, it does not support directories.
 
-The architecture of the system is shown in Figure \ref{SSD_VFS}.
+The architecture of SAFS is shown in Figure \ref{SSD_VFS}.
 It builds on top of a Linux native file system on each SSD.
 Ext3/ext4 performs well in the system as does XFS, which we use in experiments. 
 Each SSD has a dedicated I/O thread to process application requests.
@@ -653,7 +657,7 @@ File system on SSDs & XFS \\
 \label{default_conf}
 \end{table}
 
-\subsection{User-Space File Abstraction}
+\subsection{Optimizations in SAFS}
 This section enumerates the effectiveness of the hardware and software
 optimizations implemented in SAFS without caching,
 showing the contribution of each. The size of the smallest
@@ -663,9 +667,7 @@ SAFS in 16 threads.
 
 \begin{figure}[tb]
 \begin{center}
-\vspace{-15pt}
-\include{figs/SAFS/SSD-improve}
-\vspace{-15pt}
+\includegraphics[scale=1]{figs/SAFS/SSD-improve.eps}
 \caption{Optimizing page I/O in SAFS accessed from an 8 core processor (SMP).
 The bars show the aggregate IOPS when applying four optimizations successively
 in comparison with the hardware's capabilities (raw).}
@@ -680,7 +682,7 @@ We perform four optimizations on SAFS in succession to optimize performance.
 \item {\bf O\_even-irq:} distribute interrupts evenly among all CPU cores;
 \item {\bf O\_bind-cpu:} bind threads to the processor local to the SSD;
 \item {\bf O\_noop:} use the noop I/O scheduler;
-\item {\bf O\_io-thread:} create a dedicated I/O threads to access each SSD on behalf of
+\item {\bf O\_io-thread:} create a dedicated I/O thread to access each SSD on behalf of
 the application threads.
 \end{itemize}
 \vspace{-10pt}
@@ -724,7 +726,7 @@ and, thus, slow.  The 766K 4KB writes offer a better point of comparison.
 \small
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-& SSDFA & ioDrive Octal 5TB \\
+& SAFS & ioDrive Octal 5TB \\
 \hline
 Read IOPS (512B) & 1,228,100 & 1,190,000 \\
 \hline
@@ -747,9 +749,7 @@ Write Bandwidth (64 kB) & 5.6GB/s & 4.4 GB/s \\
 
 \begin{figure}[tb]
 \begin{center}
-\vspace{-15pt}
-\include{figs/SAFS/vs.soft.raid}
-\vspace{-15pt}
+\includegraphics[scale=1]{figs/SAFS/vs-soft-raid.eps}
 \caption{Performance of SAFS with Linux file systems and software RAID.
 All systems use optimizations O\_even-irq and O\_noop.}
 \label{vs_soft_raid}
@@ -790,9 +790,7 @@ the SSD array in the NUMA configuration.
 
 \begin{figure}[tb]
 \begin{center}
-\vspace{-15pt}
-\include{figs/SAFS/SSD-perf.vs.number}
-\vspace{-15pt}
+\includegraphics[scale=1]{figs/SAFS/SSD-perf-vs-number.eps}
 \caption{The 4KB read and write IOPS of individual SSDs and the aggregate IOPS
 	of the SSD array with different numbers of SSDs in the array. All SSDs
 	connect to a single HBA.}
@@ -880,9 +878,7 @@ more expensive cache line invalidation.
 
 \begin{figure}[tb]
 \begin{center}
-\vspace{-15pt}
-\include{figs/SAFS/compare-cache}
-\vspace{-15pt}
+\includegraphics[scale=1]{figs/SAFS/compare-cache.eps}
 \caption{IOPS and CPU for random read (0\% cache hit rate).}
 \label{compare_cache}
 \end{center}
@@ -892,7 +888,7 @@ A comparison of IOPS as a function of cache hit rate
 reveals that the set-associative caches outperform the Linux cache at high hit rates 
 and that caching is necessary to realize application performance.
 We measure IOPS under the uniform random workload for the Linux cache,
-with set-associative caching, and without caching (SSDFA).
+with set-associative caching, and without caching (SAFS).
 Overheads in the the Linux page cache make the set-associative cache 
 realize roughly 30\% more IOPS than Linux at all cache hit rates (Figure \ref{SA_iops}(a)).  
 The overheads come from different sources at different hit rates.  At 0\% the 
@@ -919,9 +915,8 @@ Linux is always CPU bound.
 \begin{figure*}[tb]
 \centering
 \footnotesize
-\vspace{-15pt}
 \begin{subfigure}{.5\textwidth}
-	\includegraphics{figs/SAFS/new-SA-cache-hits.pdf}
+	\includegraphics{figs/SAFS/new-SA-cache-hits.eps}
 	\label{sa_cache}
 \vspace{-15pt}
 \caption{SMP: one processor, eight applications cores.}
@@ -929,7 +924,7 @@ Linux is always CPU bound.
 
 %\vspace{-5pt}
 \begin{subfigure}{.5\textwidth}
-	\includegraphics{figs/SAFS/new-NUMA-SA-hits.pdf}
+	\includegraphics{figs/SAFS/new-NUMA-SA-hits.eps}
 	\label{numa_cache}
 \vspace{-15pt}
 \caption{NUMA: four processors, 32 application cores.}
@@ -964,9 +959,7 @@ We choose 12 pages as the default configuration and use it for all subsequent ex
 
 \begin{figure}[tb]
 \begin{center}
-\vspace{-15pt}
-\include{figs/SAFS/cell-size.hits}
-\vspace{-15pt}
+\includegraphics{figs/SAFS/cell-size-hits.eps}
 \caption{The impact of page set sizes on cache hit rate in the set-associative cache
 under real workloads both in one and 16 threads.}
 \label{hit_ratio}
@@ -1003,9 +996,7 @@ more detailed description of LFU implementation in the set-associative cache.
 
 \begin{figure}[tb]
 \begin{center}
-\vspace{-15pt}
-\include{figs/SAFS/cache-hit}
-\vspace{-15pt}
+\includegraphics{figs/SAFS/cache-hit.eps}
 \caption{The cache hit rate of different cache designs under different workloads.}
 \label{cache_hits}
 \end{center}
@@ -1040,135 +1031,133 @@ the block devices.
 
 \begin{figure}[tb]
 \begin{center}
-\vspace{-15pt}
-\include{figs/SAFS/real-workloads}
-\vspace{-15pt}
+\includegraphics{figs/SAFS/real-workloads.eps}
 \caption{The performance of the set-associative cache on real workloads}
 \label{real_workloads}
 \end{center}
 \end{figure}
 
-\subsection{HPC benchmark}
+%\subsection{HPC benchmark}
 
-This section evaluates the overall performance of SAFS under HPC benchmarks.
-The typical setup of some HPC benchmarks
-such as MADbench2 \cite{madbench2} has very large read/writes (in the
-order of magnitude of 100 MB). However, our system is optimized mainly
-for small random I/O accesses and requires many parallel I/O requests to
-achieve maximal performance. We choose the IOR benchmark \cite{IOR} for
-its flexibility.
-IOR is a highly parameterized benchmark and Shan et al. \cite{IOR}
-has demonstrated that IOR can reproduce diverse scientific workloads.
+%This section evaluates the overall performance of SAFS under HPC benchmarks.
+%The typical setup of some HPC benchmarks
+%such as MADbench2 \cite{madbench2} has very large read/writes (in the
+%order of magnitude of 100 MB). However, our system is optimized mainly
+%for small random I/O accesses and requires many parallel I/O requests to
+%achieve maximal performance. We choose the IOR benchmark \cite{IOR} for
+%its flexibility.
+%IOR is a highly parameterized benchmark and Shan et al. \cite{IOR}
+%has demonstrated that IOR can reproduce diverse scientific workloads.
 
-However, IOR has some limitations. It only supports
-multi-process parallelism and synchronous I/O interface. SSDs require many
-parallel I/O requests to achieve maximal performance, and the current
-implementation of our system can only share page cache among threads.
-To better assess the performance of our system, we add multi-threading
-and asynchronous I/O support to the IOR benchmark.
+%However, IOR has some limitations. It only supports
+%multi-process parallelism and synchronous I/O interface. SSDs require many
+%parallel I/O requests to achieve maximal performance, and the current
+%implementation of our system can only share page cache among threads.
+%To better assess the performance of our system, we add multi-threading
+%and asynchronous I/O support to the IOR benchmark.
 
-We perform thorough evaluations to our system with the IOR benchmark.
-We evaluate the synchronous and asynchronous interface of SAFS with various
-request sizes. We compare our
-system with Linux's existing solutions, software RAID and Linux page cache.
-For fair comparison, we only compare two options: asynchronous I/O without
-caching and synchronous I/O with caching, because Linux AIO does not
-support caching and our system currently does not support synchronous I/O
-without caching. We only evaluate SA cache in SSDFA because NUMA-SA cache
-is optimized for the asynchronous I/O interface and a high cache hit rate,
-and the IOR workload does not generate cache hits. 
-We turn on the random option in the IOR benchmark. We use both the N-1 test
-(N clients read/write to a single file) and the N-N test (N clients read/write
-to N files) in IOR. Figure \ref{IOR-read} and \ref{IOR-write} show the results
-of the N-1 test. We only present the write performance in the N-N test
-shown in Figure \ref{IOR-write-FPP} because the read performance in N-N test
-is similar to the one in N-1 test except that Linux buffered read in the N-N
-test can perform better in the NUMA configuration.
+%We perform thorough evaluations to our system with the IOR benchmark.
+%We evaluate the synchronous and asynchronous interface of SAFS with various
+%request sizes. We compare our
+%system with Linux's existing solutions, software RAID and Linux page cache.
+%For fair comparison, we only compare two options: asynchronous I/O without
+%caching and synchronous I/O with caching, because Linux AIO does not
+%support caching and our system currently does not support synchronous I/O
+%without caching. We only evaluate SA cache in SSDFA because NUMA-SA cache
+%is optimized for the asynchronous I/O interface and a high cache hit rate,
+%and the IOR workload does not generate cache hits. 
+%We turn on the random option in the IOR benchmark. We use both the N-1 test
+%(N clients read/write to a single file) and the N-N test (N clients read/write
+%to N files) in IOR. Figure \ref{IOR-read} and \ref{IOR-write} show the results
+%of the N-1 test. We only present the write performance in the N-N test
+%shown in Figure \ref{IOR-write-FPP} because the read performance in N-N test
+%is similar to the one in N-1 test except that Linux buffered read in the N-N
+%test can perform better in the NUMA configuration.
 
-\begin{figure}[tb]
-\begin{center}
-\vspace{-15pt}
-\include{figs/SAFS/IOR-read}
-\vspace{-15pt}
-\caption{The read throughput of SSDFA and Linux solutions both on a single
-processor and on four processors, measured by the N-1 test of IOR.
-SSDFA-AR shows the throughput of asynchronous
-read (no cache), SSDFA-BR shows the throughput of (synchronous) buffered read.
-Linux-AIO and Linux-BR show the throughput of Linux AIO read and Linux
-buffered read.}
-\label{IOR-read}
-\end{center}
-\end{figure}
+%\begin{figure}[tb]
+%\begin{center}
+%\vspace{-15pt}
+%\include{figs/SAFS/IOR-read}
+%\vspace{-15pt}
+%\caption{The read throughput of SSDFA and Linux solutions both on a single
+%processor and on four processors, measured by the N-1 test of IOR.
+%SSDFA-AR shows the throughput of asynchronous
+%read (no cache), SSDFA-BR shows the throughput of (synchronous) buffered read.
+%Linux-AIO and Linux-BR show the throughput of Linux AIO read and Linux
+%buffered read.}
+%\label{IOR-read}
+%\end{center}
+%\end{figure}
 
-\begin{figure}[tb]
-\begin{center}
-\vspace{-15pt}
-\include{figs/SAFS/IOR-write}
-\vspace{-15pt}
-\caption{The write throughput of SSDFA and Linux solutions both on
-a single processor and on four processors, measured by the N-1 test of IOR.
-SSDFA-AW shows the throughput of asynchronous write
-(no cache), SSDFA-BW shows the throughput of SSDFA (synchronous) buffered write.
-Linux-AIO and Linux-BW shows the throughput of Linux AIO write and Linux
-buffered write.}
-\label{IOR-write}
-\end{center}
-\end{figure}
+%\begin{figure}[tb]
+%\begin{center}
+%\vspace{-15pt}
+%\include{figs/SAFS/IOR-write}
+%\vspace{-15pt}
+%\caption{The write throughput of SSDFA and Linux solutions both on
+%a single processor and on four processors, measured by the N-1 test of IOR.
+%SSDFA-AW shows the throughput of asynchronous write
+%(no cache), SSDFA-BW shows the throughput of SSDFA (synchronous) buffered write.
+%Linux-AIO and Linux-BW shows the throughput of Linux AIO write and Linux
+%buffered write.}
+%\label{IOR-write}
+%\end{center}
+%\end{figure}
 
-\begin{figure}[tb]
-\begin{center}
-\vspace{-15pt}
-\include{figs/SAFS/IOR-write-FPP}
-\vspace{-15pt}
-\caption{The write throughput of SSDFA and Linux solutions both on
-a single processor and on four processors, measured by the N-N test of IOR.
-SSDFA-AW shows the throughput of asynchronous write
-(no cache), SSDFA-BW shows the throughput of SSDFA (synchronous) buffered write.
-Linux-AIO and Linux-BW shows the throughput of Linux AIO write and Linux
-buffered write.}
-\label{IOR-write-FPP}
-\end{center}
-\end{figure}
+%\begin{figure}[tb]
+%\begin{center}
+%\vspace{-15pt}
+%\include{figs/SAFS/IOR-write-FPP}
+%\vspace{-15pt}
+%\caption{The write throughput of SSDFA and Linux solutions both on
+%a single processor and on four processors, measured by the N-N test of IOR.
+%SSDFA-AW shows the throughput of asynchronous write
+%(no cache), SSDFA-BW shows the throughput of SSDFA (synchronous) buffered write.
+%Linux-AIO and Linux-BW shows the throughput of Linux AIO write and Linux
+%buffered write.}
+%\label{IOR-write-FPP}
+%\end{center}
+%\end{figure}
+%
+%Figure \ref{IOR-read} shows that SSDFA read significantly outperforms
+%Linux read on a NUMA machine in the N-1 test. When
+%the request size is small, Linux AIO read has much
+%lower throughput than SSDFA asynchronous read (no cache) in the NUMA configuration
+%due to the bottleneck in the Linux software RAID. Although SSDFA synchronous
+%buffered read perform poorly with small request sizes, its throughput
+%increases constantly with larger requests. The throughput of Linux buffered read
+%in the NUMA configuration, on the other hand, barely increases with the
+%request size due to the high cache overhead.
 
-Figure \ref{IOR-read} shows that SSDFA read significantly outperforms
-Linux read on a NUMA machine in the N-1 test. When
-the request size is small, Linux AIO read has much
-lower throughput than SSDFA asynchronous read (no cache) in the NUMA configuration
-due to the bottleneck in the Linux software RAID. Although SSDFA synchronous
-buffered read perform poorly with small request sizes, its throughput
-increases constantly with larger requests. The throughput of Linux buffered read
-in the NUMA configuration, on the other hand, barely increases with the
-request size due to the high cache overhead.
+%SSDFA write performs much better than all Linux's solutions in the N-1 test,
+%especially for small request sizes (Figure \ref{IOR-write}). Thanks to
+%our novel design of the flush thread in our page cache, SSDFA synchronous
+%buffered write can achieve performance close to SSDFA asynchronous write.
+%XFS has two exclusive locks on each file: one is to protect the inode data
+%structure and is held briefly at each acquisition; the other is
+%to protect I/O access to the file and is held for a longer time. Linux
+%AIO write only acquires the one for inode and Linux buffered write acquires
+%both locks. Thus, Linux AIO cannot perform well with small writes on XFS,
+%but it can still reach maximal performance with a large request size on both
+%a single processor and four processors. Linux buffered write, on the other
+%hand, performs much worse and its performance can only be improved slightly
+%with a larger request size.
 
-SSDFA write performs much better than all Linux's solutions in the N-1 test,
-especially for small request sizes (Figure \ref{IOR-write}). Thanks to
-our novel design of the flush thread in our page cache, SSDFA synchronous
-buffered write can achieve performance close to SSDFA asynchronous write.
-XFS has two exclusive locks on each file: one is to protect the inode data
-structure and is held briefly at each acquisition; the other is
-to protect I/O access to the file and is held for a longer time. Linux
-AIO write only acquires the one for inode and Linux buffered write acquires
-both locks. Thus, Linux AIO cannot perform well with small writes on XFS,
-but it can still reach maximal performance with a large request size on both
-a single processor and four processors. Linux buffered write, on the other
-hand, performs much worse and its performance can only be improved slightly
-with a larger request size.
-
-Figure \ref{IOR-write-FPP} shows that XFS and Linux page cache perform
-better in the N-N test than in the N-1 test, but SSDFA can still outperform them,
-especially
-for synchronous write. The N-N test essentially removes nearly all lock
-contention in XFS and Linux page cache, which boosts their performance.
-However, the bottleneck in the Linux software RAID still exists, so like
-the N-1 test, Linux AIO write is still slower than SSDFA asynchronous
-write in the NUMA configuration. Again, SSDFA synchronous buffered write
-can significantly outperform Linux buffered write thanks to our new design
-of the flush thread. Linux buffered write on a single processor
-performs worse than on four processors because Linux page cache hits
-a bottleneck in page allocation on a single processor. When a dedicated
-per-processor kernel thread cannot free sufficient pages to keep
-up the speed of page allocation required by other threads, all threads
-have to try to free pages and causes extremely high lock contention.
+%Figure \ref{IOR-write-FPP} shows that XFS and Linux page cache perform
+%better in the N-N test than in the N-1 test, but SSDFA can still outperform them,
+%especially
+%for synchronous write. The N-N test essentially removes nearly all lock
+%contention in XFS and Linux page cache, which boosts their performance.
+%However, the bottleneck in the Linux software RAID still exists, so like
+%the N-1 test, Linux AIO write is still slower than SSDFA asynchronous
+%write in the NUMA configuration. Again, SSDFA synchronous buffered write
+%can significantly outperform Linux buffered write thanks to our new design
+%of the flush thread. Linux buffered write on a single processor
+%performs worse than on four processors because Linux page cache hits
+%a bottleneck in page allocation on a single processor. When a dedicated
+%per-processor kernel thread cannot free sufficient pages to keep
+%up the speed of page allocation required by other threads, all threads
+%have to try to free pages and causes extremely high lock contention.
 
 \section{Conclusion}
 We present a user-space filesystem called SAFS that achieves more than one million
