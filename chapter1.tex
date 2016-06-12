@@ -9,8 +9,9 @@ data volume and the increasing complexity of data analysis. Experiments,
 simulations and observations generate terabytes or
 even petabytes in many scientific and business areas. After collecting
 a massive amount of data, we often need to perform complex data analysis
-and machine learning techniques to gain insight from the data. Furthermore,
-the fields of data analysis and machine learning evolve rapidly and the community
+and machine learning techniques to gain insight from the data. These data
+analysis tasks exhibit various data access and computation patterns. Furthermore,
+the fields of data analysis and machine learning evolve rapidly. the community
 is developing many new algorithms to effectively extract value from massive
 datasets.
 
@@ -37,7 +38,7 @@ graphs randomly \cite{powergraph}. Network performance emerges as the bottleneck
 and large-scale graph analysis requires fast networks to realize good performance.
 
 % Matrix formulation for general data analysis
-Other than graph analysis, linear algebra is another fundamental tool for many
+Besides graph analysis, linear algebra is another fundamental tool for many
 scientific and machine learning applications. In these applications, we store
 data in (sparse or dense) matrices, and express algorithms with matrix
 operations. Matrix formulation is simple and intuitive for domain experts.
@@ -48,8 +49,8 @@ algorithms.
 Complex data analysis at a large scale faces significant challenges for
 conventional tools. For instance, MatLab and R are known to scale to large
 datasets poorly. Even though SQL database systems can process relatively large
-datasets, their programming interface is not designed for programming machine
-learning algorithms and their internal optimizations are not designed for this
+datasets, their programming interface is not designed for programming data
+analysi algorithms and their internal optimizations are not designed for this
 type of workloads either.
 The challenges lead to the redesign of data analysis tools.
 MapReduce \cite{mapreduce} is one of the most well-known tools developed for
@@ -58,7 +59,7 @@ process data of petabytes in a large cluster, the framework is not able to
 handle many data analysis tasks efficiently due to the limited primitive
 operations provided by the framework. Since then, many distributed frameworks,
 such as Dryad \cite{dryad}, Spark \cite{spark} and Naiad \cite{naiad}, have
-been developed for processing large datasets and these frameworks provides
+been developed for processing large datasets. These frameworks provides
 more primitives to express data analysis algorithms more efficiently.
 % related work in supercomputing.
 
@@ -73,51 +74,44 @@ are obstacles of moving to exascale computation.
 
 % I/O
 This thesis explores a different direction of scaling data analysis. Instead
-of scaling out to a large cluster, we focus on large-scale data analysis in
-a single machine, by utilizing the fast I/O technology, and explore
-efficient implementations of data analysis tasks for a large parallel machine.
+of scaling out to a large cluster, we focus on large-scale data analysis
+using fast I/O technologies and explore efficient solutions for these tasks
+on a large parallel machine. It is orthogonal to the distributed solutions
+because our work serve as a building block for the distributed solutions to
+process data at even a larger scale.
 
 This work is motivated
 by the tremendous improvement in storage I/O technology in the recent years.
-For example, the latest development of flash memory \cite{fusionio, safs} has
+For example, the latest development of flash memory has
 reached over one million random IOPS and over ten gigabytes per second. This
 is only one order of magnitude slower than RAM. We believe the advance of
 I/O technologies opens a new direction for large-scale data analysis.
 The tremendous performance
 improvement in I/O potentially makes flash memory the true extension of RAM
-and motivates us to develop new frameworks that fully utilize the I/O capacity
-for large-scale data analysis.
+and enables an efficient and cost-effective solution for running complex
+data analysis on massive datasets.
 
-% The goals of the dissertation.
 Given the tremendous hardware improvement, this thesis addresses mainly two
-questions: \textit{(i)} Can we replace RAM with fast flash memory in large-scale
-data analysis? \textit{(ii)} To what extent
-can the performance of flash-based data analysis approach that of RAM-based
-data analysis? If data analysis on flash memory can achieve performance comparable to
-that in RAM, it will positively affect computer architecture and revolutionize
-large-scale data analysis.
+questions: \textit{(i)} To what extent can the performance of flash-based
+data analysis approach that of RAM-based data analysis? \textit{(ii)} Can
+we replace RAM with fast flash memory in large-scale data analysis? If data
+analysis on flash memory can achieve performance comparable to that in RAM,
+it will positively affect computer architecture and revolutionize large-scale
+data analysis. This is the first work that addresses these questions in
+a large variety of data analysis tasks.
 
-In this thesis, we build
-efficient programming frameworks with commodity hardware for various
-data analysis applications such as graph analysis and machine learning.
-%\dz{I need to emphasize the programming framework part.}
-This work is orthogonal to the distributed solutions because our work serve as
-a building block
-for the distributed solutions to process data at even a larger scale.
-% point out that our solution in some applications can outperform a pure
-% distributed solution.
-
-Hardware advances impose many new challenges in system design (both the operating
-system and the data analysis framework). Operating systems were traditionally
-designed with an assumption of slow I/O. There exists significant overhead in
-almost all layers of the block stack of the Linux kernal when it operates on
+Hardware advances impose many new challenges in system design (both operating
+systems and data analysis frameworks). Operating systems were traditionally
+designed with an assumption of slow I/O. There exists significant lock contention
+in almost all layers of the block stack of the Linux kernal when it operates on
 fast storage. High-speed random I/O consumes significant CPU power, which
 requires us to minimize CPU overhead for I/O access in order to maximize
-the overall performance. Although the latest I/O devices deliver unprecedented
-performance, they are still much slower than RAM, let alone CPU cache, in both
+the overall performance. Furthermore, although the latest I/O devices deliver
+unprecedented performance, they are still orders of magnitude slower than RAM,
+let alone CPU cache, in both
 throughput and latency. As such, it is crucial for data analysis frameworks to
-reduce I/O whenever
-possible to achieve performance better than the raw hardware delivers.
+reduce I/O by reusing data in memory and constructing more compact data format
+to achieve performance better than the raw hardware delivers.
 
 % currsize is not set in the long table environment, so we need to set it before we set it up.
 \makeatletter
@@ -131,27 +125,36 @@ possible to achieve performance better than the raw hardware delivers.
 \caption{The architecture of FlashX.}
 \end{figure}
 
-We build an SSD-based data analysis ecosystem called FlashX to explore the benefits
-that flash memory brings to large-scale data analysis. In this thesis,
-we specifically targets graph analysis and machine learning due to their ubiquity.
-FlashX has three main subsystems:
+We build an SSD-based data analysis ecosystem called FlashX to explore
+the benefits that flash memory brings to large-scale data analysis. Instead
+of using fast but expensive non-volatile memory (NVM), we build a very fast
+I/O system with commodity SSDs. To cover a large variety of data analysis tasks,
+we build efficient programming frameworks, instead of implementing individual
+data analysis algorithms to utilize SSDs. The data analysis tasks covered
+by FlashX include graph analysis and machine learning. FlashX has three main
+subsystems:
 \begin{itemize}
 	\item SAFS \cite{safs} is a user-space filesystem optimized for large SSD
-		arrays. SAFS abstracts away the complexity of data access on SSDs and
-		delivers the maximal I/O performance of a large SSD array in a NUMA
-		machine. SAFS also provides an efficient caching layer \cite{SA-cache}.
+		arrays. SAFS abstracts away the complexity of data access to an SSD array
+		and delivers the maximal I/O throughput from the SSDs (millions of I/O
+		per second for random I/O and tens of gigabytes per second for sequential
+		I/O) in a large NUMA
+		machine. In addition, SAFS also provides an efficient caching layer
+		\cite{hotstorage12} to amplify user-perceived I/O performance.
 	\item FlashGraph \cite{flashgraph} is a semi-external memory graph analysis
-		framework. FlashGraph takes advantage of SAFS and issues I/O requests
+		framework. During the computation, it keeps vertex state in memory and
+		edges on SSDs. It takes advantage of SAFS and issues I/O requests
 		carefully to bring data from SSDs to CPUs efficiently for graph analysis
 		to achieve performance comparable to in-memory counterparts. FlashGraph
 		is specifically optimized for graph applications that generates random
 		I/O access to SSDs.
-	\item FlashMatrix implements a set of basic matrix operations as well as
-		some generalized matrix operations to express a large range of machine
-		learning and data analysis applications in external memory. It supports
+	\item FlashMatrix provides a matrix programming interface for general data
+		analysis tasks using SSDs. It implements a set of basic matrix operations
+		as well as some generalized matrix operations to express a large range
+		of machine learning and data analysis applications. It supports
 		both sparse matrices \cite{SEM_SpMM} and dense matrices \cite{flashmatrix}.
 		Like FlashGraph, the goal of FlashMatrix is to brings data from SSDs to
-		CPUs efficiently for basic and generalized matrix operations. Unlike
+		CPUs efficiently for all matrix operations. Unlike
 		FlashGraph, FlashMatrix is optimized for applications with sequential
 		I/O access to SSDs. FlashMatrix reimplements many matrix operations
 		in the R framework to execute R code in parallel and out of core
@@ -166,19 +169,18 @@ a graph as a sparse matrix and express graph analysis as matrix operations
 matrix represents a vertex in a graph and a non-zero entry encodes the existence
 of an edge or the edge weight on a graph. Both formulations are commonly adopted
 and the leading graph processing frameworks use one of the formulations
-\cite{pregal, powergraph, graphx, graphchi, xstream, pegasus, heigen}.
+\cite{pregel, powergraph, graphx, graphchi, xstream, pegasus, heigen}.
 The first formulation is more flexible and can express very complex graph
 algorithms such as Louvain clustering \cite{louvain} and METIS \cite{metis}.
 It is also more efficient for some commonly used graph algorithms such as
 breadth-first search and triangle counting. The matrix formulation, however,
 is more intuitive for domain experts because these users are familiar with
-using matrix operations to express algorithms. The matrix
-formulation may also lead to more efficient implementations for some graph
-analysis applications such as PageRank \cite{pagerank} and spectral clustering
-\cite{spectral}, expressed intuitively with sparse matrix multiplication.
+using matrix operations to express algorithms. It also leads to more efficient
+implementations for some graph analysis applications such as PageRank
+\cite{pagerank} and spectral clustering \cite{spectral}.
 
-FlashX uses semi-external memory for graph analysis
-and matrix computation to achieve both scalability and computation efficiency.
+This theis demonstrates that semi-external memory is an effective strategy of
+achieving both scalability and computation efficiency for many data analysis tasks.
 For graph analysis, semi-external memory \cite{Abello98} maintains algorithmic
 vertex state in RAM and edge lists on storage. Only using memory for vertices
 increases the scalability of graph engines in proportion to the ratio of edges
@@ -193,7 +195,7 @@ memory in a machine to reduce I/O access and achieve performance. In addition,
 this computation paradigm reduces the amount of data written to SSDs
 dramatically, which is essential to increase the lifetime of SSDs.
 
-This thesis demonstrates that FlashX in semi-external memory realizes
+We also show that FlashX in semi-external memory realizes
 in-memory performance for many data analysis tasks while scaling to massive
 datasets in a single machine. FlashGraph in semi-external memory achieves
 efficiency comparable to its in-memory version and Galois \cite{galois},
@@ -209,9 +211,11 @@ execution. The implementations of machine learning algorithms in FlashMatrix
 significantly outperforms the same algorithms in Spark MLlib \cite{mllib}.
 FlashMatrix effortlessly scales to datasets with billions of data points and
 its out-of-core execution uses a small fraction of resources required by
-in-memory implementations. Given the fast performance and small memory footprint,
-we conclude that FlashX offers unprecedented opportunities for users to perform
-massive data analysis efficiently with commodity hardware.
+in-memory implementations. Given the fast performance, we conclude that
+the new I/O technologies coupled with semi-external memory offer a very
+promising design choice for efficient and cost-effective data analysis and
+FlashX is a very good realization of such a design. We release the code of
+FlashX as open source at http://flashx.io.
 
 \section{Related work}
 % General-purpose data processing framework
@@ -232,12 +236,12 @@ MapReduce requires sorting to move data to the right location, which leads
 to significant overhead. As such, typical graph algorithms such as breadth-first
 search and triangle counting are very slow in MapReduce.
 
-Dryad \cite{dryad} and Naiad \cite{naiad} are distributed execution engine to
-process
+Dryad \cite{dryad} and Naiad \cite{naiad} are distributed execution engines
+from Microsoft for processing
 large datasets. Unlike MapReduce, Dryad provides a much more flexible computation
 model and gives developers more fine-grain control over computation and data
 communication. Developers construct a directed acyclic graph to describe
-communication in the computation and define computation on the vertices in
+communication and define computation on the vertices in
 the graph to express algorithms. Naiad provides an even more
 flexible computation model, \textit{timely dataflow}, that supports data flow
 graphs with loops. As such, it supports high throughput for batch processing,
@@ -246,25 +250,25 @@ computations. Given the flexible computation model, both Dryad and Naiad
 implement varieties of data processing tasks more efficiently at the cost of
 higher programming complexity.
 
-Unlike previous distributed frameworks, Spark \cite{spark} is specifically
+Spark \cite{spark} is specifically
 optimized for in-memory data processing in a distributed environment.
 Unlike MapReduce, which relies on writing data to the underlying distributed
 filesystem to pass data reliably between MapReduce jobs, Spark keeps data
-passed between different computation stages in memory
-to avoid overhead of I/O access. Instead of replicating data to achieve
-reliability, Spark stores transformation operations associated with RDDs to
-reconstruct a lost partition of an RDD due to node failure.
+passed between different computation stages in memory to avoid overhead of
+I/O access. The uniqueness of Spark is the data reliability model. Instead
+of replicating data to achieve reliability, Spark stores data transformation
+operations with RDDs (Resilient Distributed Datasets) and handles data loss
+due to node failure by reconstructing lost partitions on the fly.
 
 % Programming interface on top of data processing frameworks
 Due to the programming complexity in the distributed execution engines, many
 programming frameworks have been developed on top of the distributed execution
 engines. Pig Latin \cite{pig} and FlumeJava \cite{flumejava} build on top of
-MapReduce to provide high-level SQL-like operations for general data analysis.
-DryadLINQ \cite{dryadlinq} builds on top of Dryad and exposes a high-level
-language to express data analysis tasks. Fundamentally, when these systems
-translate high-level operations to low-level primitives, they combine high-level
-operations to reduce the number of invocations of low-level primitives as much
-as possible. The achievable performance of these programming frameworks is
+MapReduce to provide high-level SQL-like operations for general data analysis;
+DryadLINQ \cite{dryadlinq} builds on top of Dryad. The common strategy of
+optimizing these programming frameworks is to combine high-level operations
+to reduce the number of invocations of low-level primitives of the distributed
+execution engines. The achievable performance of these programming frameworks is
 bound by the underlying distributed execution engines.
 
 % MapReduce-based systems for graph analysis and machine learning.
@@ -279,7 +283,7 @@ PageRank \cite{pagerank} and label propagation \cite{label_prop}, but performs
 poorly for graph traversal algorithms. HEIGEN \cite{heigen} implements
 an eigensolver on top of MapReduce for spectral analysis on billion-node
 graphs. Despite optimizations in the framework, the HEIGEN eigensolver is
-orders of magnitude slower than state-of-art distributed memory eigensolvers.
+orders of magnitude slower than state-of-the-art distributed memory eigensolvers.
 Cheng-Tao Chu et. al \cite{Chu07} implements a set of machine learning
 algorithms using MapReduce to achieve speedup in a multicore machine. SystemML
 \cite{systemml} builds a scalable declarative machine learning system on top
@@ -288,10 +292,9 @@ ML algorithms.
 
 % Distributed graph processing frameworks
 Due to the importance of graph analysis, both industry and academia build
-dedicated graph processing frameworks for large-scale graph analysis.
-Graph analysis results in a large number of random memory accesses, and
-thus state-of-art graph engines use distributed memory for large-scale
-graph analysis.
+dedicated graph processing frameworks. Graph analysis results in random memory
+accesses, and thus state-of-the-art graph engines use
+distributed memory for large-scale graph analysis.
 Pregel \cite{pregel} is a distributed graph-processing framework that
 allows users to express graph algorithms in vertex-centric programs  
 using bulk-synchronous processing (BSP).
@@ -301,7 +304,9 @@ Giraph \cite{giraph} is an open-source implementation of Pregel.
 GraphLab \cite{graphlab} and PowerGraph \cite{powergraph} prefer shared-memory
 to message passing and provide asynchronous execution.
 Trinity \cite{trinity} optimizes message passing by restricting vertex
-communication to a vertex and its direct neighbors.
+communication to a vertex and its direct neighbors. GraphX \cite{graphx}
+builds a graph processing framework on Spark using only a few basic dataflow
+operators such as join and groupby.
 
 % External-memory graph processing frameworks
 Despite random memory access required by graph analysis, significant efforts
@@ -310,11 +315,10 @@ and X-stream \cite{xstream} are specifically designed for magnetic disks. They
 eliminate random data access from disks by scanning the entire graph dataset
 in each iteration. Like graph processing frameworks built on top of MapReduce,
 they work relatively well for graph algorithms that require computation on all
-vertices, but share the same limitations, i.e., suboptimal graph traversal
-algorithm performance. TurboGraph \cite{turbograph} is an external-memory graph
-engine optimized for SSDs. TurboGraph targets graph algorithms
-expressed in sparse matrix vector multiplication, so it is difficult to
-implement graph applications such as triangle counting.
+vertices, but share the same limitations, i.e., suboptimal performance in graph
+traversal algorithms. TurboGraph \cite{turbograph} is an external-memory graph
+engine optimized for SSDs and targets graph algorithms that can be
+expressed in sparse matrix vector multiplication.
 
 % linear algebra for graph analysis
 Many graph algorithms can be formulated as sparse matrix multiplication or
@@ -330,8 +334,8 @@ and express their problems in the form of linear algebra.
 % Additional frameworks for large-scale machine learning.
 Many machine learning frameworks have been developed to enable large-scale
 machine learning. H2O \cite{h2o} and Spark MLlib \cite{mllib} are machine
-learning libraries with a collection of machine learning algorithms implemented
-on Spark. GraphLab \cite{graphlab} is a programming framework that provides
+learning libraries implemented on top of Spark. GraphLab \cite{graphlab} is
+a programming framework that provides
 primitives for graph-based machine learning algorithms in a distributed
 environment. OptiML \cite{optiml} is a domain-specific language and supports
 vector, matrix and graph operations to implement machine learning algorithms.
@@ -339,6 +343,5 @@ It is built on top of a parallel runtime system called Delite \cite{delite}
 to enable parallelism in a heterogeneous computation environment in a single
 machine. Petuum \cite{petuum} is a distributed programming framework for
 implementing machine learning algorithms. It leverages several fundamental
-properties of machine learning algorithms: error tolerance, dynamic structure
-and non-uniform convergence, and aims at faster convergence of
+properties of machine learning algorithms and aims at faster convergence of
 an algorithm instead of achieving higher throughput in a single iteration.
