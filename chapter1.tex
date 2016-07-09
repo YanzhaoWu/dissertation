@@ -4,24 +4,24 @@
 
 % The key point here is that data is large and often irregular and we want
 % to run complex computation on them.
-In today's big data era, we face the challenges in both the explosion of
-data volume and the increasing complexity of data analysis. Experiments,
+In today's big data era, we face challenges in both the explosion of
+data and the increase in complexity of data analysis. Experiments,
 simulations and observations generate terabytes or
 even petabytes in many scientific and business areas. After collecting
 a massive amount of data, we often need to perform complex data analysis
 and machine learning techniques to gain insight from the data. These data
 analysis tasks exhibit various data access and computation patterns. Furthermore,
 the fields of data analysis and machine learning evolve rapidly. the community
-is developing many new algorithms to effectively extract value from massive
-datasets.
+continuously develops many new algorithms to effectively extract value from
+massive datasets.
 
 % Graph analysis.
-A class of commonly used data analysis in both academia and industry is graph
-analysis. This models
+Graph analysis is a class of commonly used data analysis in both academia and
+industry. This models
 real-world problems in the form of graphs (vertices and edges) to study objects
 and the connection between the objects. Graph analysis becomes ubiquitous
-and has applications to many fields such as social networks, semantic search
-and knowledge discovery and cybersecurity. A well-known example is that Google
+and has applications in many fields such as social networks, semantic search,
+knowledge discovery and cybersecurity. A well-known example is that Google
 applies PageRank \cite{pagerank} on the Web page graph to determine the importance
 of Web pages so that Google can provide users more relevant search results.
 
@@ -43,31 +43,31 @@ scientific and machine learning applications. In these applications, we store
 data in (sparse or dense) matrices, and express algorithms with matrix
 operations. Matrix formulation is simple and intuitive for domain experts.
 This leads to the development of many popular matrix-oriented programming
-frameworks, such as MatLab and R, to help scientists encode and deploy complex
+frameworks, such as MATLAB and R, to help scientists encode and deploy complex
 algorithms.
 
-Complex data analysis at a large scale faces significant challenges for
-conventional tools. For instance, MatLab and R are known to scale to large
+Complex data analysis at a large scale poses significant challenges for
+conventional tools. For instance, MATLAB and R are known to scale to large
 datasets poorly. Even though SQL database systems can process relatively large
 datasets, their programming interface is not designed for programming data
 analysi algorithms and their internal optimizations are not designed for this
 type of workloads either.
-The challenges lead to the redesign of data analysis tools.
+These challenges lead to the redesign of data analysis tools.
 MapReduce \cite{mapreduce} is one of the most well-known tools developed for
-data analysis in the petabyte scale. Even though MapReduce is able to
-process data of petabytes in a large cluster, the framework is not able to
+data analysis at the petabyte scale. Even though MapReduce is able to
+process petabytes of data in a large cluster, the framework is not able to
 handle many data analysis tasks efficiently due to the limited primitive
-operations provided by the framework. Since then, many distributed frameworks,
-such as Dryad \cite{dryad}, Spark \cite{spark} and Naiad \cite{naiad}, have
-been developed for processing large datasets. These frameworks provides
+operations provided by the framework. Many other distributed frameworks,
+such as Dryad \cite{dryad}, Spark \cite{spark} and Naiad \cite{naiad}, were
+developed for processing large datasets. These frameworks provides
 more primitives to express data analysis algorithms more efficiently.
 % related work in supercomputing.
 
-Majority of the current research focuses on scaling out to a large cluster,
-but many of them achieve better scalability at the cost of large overhead
-introduced to the system. This is a common problem in many distributed systems
-such as MapReduce. As McSherry et al. \cite{mcsherry15}
-points out, many graph analysis frameworks such as PowerGraph \cite{powergraph}
+The majority of current research focuses on scaling out to a large cluster,
+but many of the distributed frameworks achieve better scalability at the cost
+of large overhead introduced to the system. This is a common problem in many
+distributed systems such as MapReduce. As McSherry et al. \cite{mcsherry15}
+point out, many graph analysis frameworks such as PowerGraph \cite{powergraph}
 and GraphX \cite{graphx} suffer from the same problem. As such, these systems
 are less economical in terms of dollar efficiency and energy efficiency, which
 are obstacles of moving to exascale computation.
@@ -75,29 +75,29 @@ are obstacles of moving to exascale computation.
 % I/O
 This thesis explores a different direction of scaling data analysis. Instead
 of scaling out to a large cluster, we focus on large-scale data analysis
-using fast I/O technologies and explore efficient solutions for these tasks
+using fast I/O technologies and exploring efficient solutions for these tasks
 on a large parallel machine. It is orthogonal to the distributed solutions
 because our work serve as a building block for the distributed solutions to
 process data at even a larger scale.
 
-This work is motivated
-by the tremendous improvement in storage I/O technology in the recent years.
-For example, the latest development of flash memory has
-reached over one million random IOPS and over ten gigabytes per second. This
-is only one order of magnitude slower than RAM. We believe the advance of
-I/O technologies opens a new direction for large-scale data analysis.
-The tremendous performance
+% TODO I need to describe recent I/O advances in more details.
+This work is motivated by the tremendous improvement in storage I/O technology
+in the recent years. For example, a single solid-state drive (SSD) today
+typically delivers 100K IOPS and half a gigabytes per second. As such,
+an array of such SSDs can reach over one million random IOPS and over ten
+gigabytes per second. This is only one order of magnitude slower than RAM.
+We believe the advance of I/O technologies opens a new direction for
+large-scale data analysis. The tremendous performance
 improvement in I/O potentially makes flash memory the true extension of RAM
 and enables an efficient and cost-effective solution for running complex
 data analysis on massive datasets.
 
-Given the tremendous hardware improvement, this thesis addresses mainly two
-questions: \textit{(i)} To what extent can the performance of flash-based
-data analysis approach that of RAM-based data analysis? \textit{(ii)} Can
-we replace RAM with fast flash memory in large-scale data analysis? If data
-analysis on flash memory can achieve performance comparable to that in RAM,
+The main question we address in this thesis is:
+To what extent can the performance of flash-based
+data analysis approach that of RAM-based data analysis? If data
+analysis using flash memory can achieve performance comparable to that in RAM,
 it will positively affect computer architecture and revolutionize large-scale
-data analysis. This is the first work that addresses these questions in
+data analysis. This is the first work that explore this question with
 a large variety of data analysis tasks.
 
 Hardware advances impose many new challenges in system design (both operating
@@ -130,9 +130,8 @@ the benefits that flash memory brings to large-scale data analysis. Instead
 of using fast but expensive non-volatile memory (NVM), we build a very fast
 I/O system with commodity SSDs. To cover a large variety of data analysis tasks,
 we build efficient programming frameworks, instead of implementing individual
-data analysis algorithms to utilize SSDs. The data analysis tasks covered
-by FlashX include graph analysis and machine learning. FlashX has three main
-subsystems:
+data analysis algorithms, to cover a variety of data analysis tasks including
+graph analysis and machine learning. FlashX has three main subsystems:
 \begin{itemize}
 	\item SAFS \cite{safs} is a user-space filesystem optimized for large SSD
 		arrays. SAFS abstracts away the complexity of data access to an SSD array
@@ -153,8 +152,8 @@ subsystems:
 		as well as some generalized matrix operations to express a large range
 		of machine learning and data analysis applications. It supports
 		both sparse matrices \cite{SEM_SpMM} and dense matrices \cite{flashmatrix}.
-		Like FlashGraph, the goal of FlashMatrix is to brings data from SSDs to
-		CPUs efficiently for all matrix operations. Unlike
+		The goal of FlashMatrix is to brings data from SSDs to CPUs efficiently for
+		all matrix operations. Unlike
 		FlashGraph, FlashMatrix is optimized for applications with sequential
 		I/O access to SSDs. FlashMatrix reimplements many matrix operations
 		in the R framework to execute R code in parallel and out of core
@@ -179,7 +178,7 @@ using matrix operations to express algorithms. It also leads to more efficient
 implementations for some graph analysis applications such as PageRank
 \cite{pagerank} and spectral clustering \cite{spectral}.
 
-This theis demonstrates that semi-external memory is an effective strategy of
+This thesis demonstrates that semi-external memory is an effective strategy of
 achieving both scalability and computation efficiency for many data analysis tasks.
 For graph analysis, semi-external memory \cite{Abello98} maintains algorithmic
 vertex state in RAM and edge lists on storage. Only using memory for vertices
@@ -197,17 +196,20 @@ dramatically, which is essential to increase the lifetime of SSDs.
 
 We also show that FlashX in semi-external memory realizes
 in-memory performance for many data analysis tasks while scaling to massive
-datasets in a single machine. FlashGraph in semi-external memory achieves
+datasets in a single machine. These data analysis tasks exhibit varieties of
+I/O access patterns and different computation and I/O complexities.
+FlashGraph in semi-external memory achieves
 efficiency comparable to its in-memory version and Galois \cite{galois},
 a high-performance, in-memory graph engine with a low-level API, on
-a wide-variety of algorithms that generate diverse access patterns, while
+a variety of algorithms that generate diverse access patterns, while
 significantly outperforming PowerGraph, a popular distributed in-memory
 graph engine. We further demonstrate that FlashGraph can process massive
 natural graphs in a single machine with relatively small memory footprint;
 e.g., we perform breadth-first search on a graph of 3.4 billion vertices
 and 129 billion edges using only 22 GB of memory. Similarly, the out-of-core
-execution of FlashMatrix achieves performance comparable to the in-memory
-execution. The implementations of machine learning algorithms in FlashMatrix
+execution of both sparse matrix and dense matrix operations in FlashMatrix
+achieves performance comparable to their in-memory execution; the implementations
+of machine learning algorithms in FlashMatrix
 significantly outperforms the same algorithms in Spark MLlib \cite{mllib}.
 FlashMatrix effortlessly scales to datasets with billions of data points and
 its out-of-core execution uses a small fraction of resources required by
