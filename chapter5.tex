@@ -4,12 +4,12 @@
 	Matrix Operations using Commodity SSDs}
 
 This chapter describes FlashMatrix, a matrix-oriented programming framework
-for general data analysis with high-level functional programming interface.
+for general data analysis with seamless integration with the R framework.
 FlashMatrix incorporates the efficient sparse matrix multiplication in Chapter
 \ref{sec:fe}. In this chapter, we focus on dense matrix operations in FlashMatrix.
 To achieve generality, it provides a small number of generalized matrix
 operations (GenOps) and reimplements a large number of matrix operations in
-the R framework with GenOps. As such, it executes R code in parallel and out of
+the R framework with GenOps. It executes R code in parallel and out of
 core automatically. FlashMatrix
 uses vectorized user-defined functions (VUDF) to reduce the overhead of function
 calls and fuses matrix operations to reduce data movement between CPU and
@@ -18,8 +18,8 @@ the performance of FlashMatrix. The execution of the R implementations in
 FlashMatrix has performance comparable to optimized C implementations.
 When scaling beyond memory capacity on a large parallel machine, the out-of-core
 execution of these R implementations in FlashMatrix has performance comparable
-to in-memory execution on a billion-scale dataset. Both in-memory and
-out-of-core execution significantly outperform the in-memory execution of
+to in-memory execution on a dataset with billions of data points. Both in-memory
+and out-of-core execution significantly outperform the in-memory execution of
 Spark MLlib.
 
 \section{Introduction}
