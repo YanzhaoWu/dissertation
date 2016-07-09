@@ -6,21 +6,22 @@
 
 \begin{abstract}
 
-With the explosion of data volume and the increasing complexity of data analysis,
+With the explosion of data and the increasing complexity of data analysis,
 large-scale data analysis imposes significant challenges in systems design.
-While the current research focuses on scaling out
-to a large clusters, these scale-out solutions introduce significant overheads.
+While current research focuses on scaling out to large clusters, these
+scale-out solutions introduce a significant amount of overhead.
 This thesis is motivated by the advance of new I/O technologies such as flash
 memory. Instead of scaling out, we explore efficient system designs in a single
 commodity machine with non-uniform memory architecture (NUMA) and scale to large
 datasets by utilizing commodity solid-state drives (SSDs). This thesis explores
-the impact of the new I/O technologies in large-scale data analysis.
+the impact of the new I/O technologies on large-scale data analysis.
 Instead of implementing individual data analysis algorithms for SSDs, we
 develop a data analysis ecosystem called FlashX to target a large range of
 data analysis tasks. FlashX includes three subsystems: SAFS, FlashGraph and
 FlashMatrix. SAFS is a user-space filesystem optimized for a large SSD array
 to deliver maximal I/O throughput from SSDs. FlashGraph is a general-purpose
-graph analysis framework that processes graphs in a semi-external memory fashion
+graph analysis framework that processes graphs in a semi-external memory fashion,
+i.e., keeping vertex state in memory and edges on SSDs,
 and scales to graphs with billions of vertices by utilizing SSDs through SAFS.
 FlashMatrix is a matrix-oriented programming framework that supports both sparse
 matrices and dense matrices for general data analysis. Similar to FlashGraph, it
